@@ -1,1 +1,1871 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tugas_Fadli Kurnia Ramadhan — Portal Presentasi 3D Sertifikasi BNSP AI (UK 1–UK 6)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Lightweight Fixed 3D Background Image + Clean Light Veil (Zero GPU Lag) */
+    #bg-image-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    #bg-scrim-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.86) 0%, rgba(241, 245, 249, 0.92) 100%);
+    }
+    /* Tactile 3D Card Architecture (Hardware-Accelerated, Zero Blur Lag) */
+    .surface-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 1rem;
+      box-shadow: 0 5px 0 0 #cbd5e1, 0 10px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+    .card-3d {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 1rem;
+      box-shadow: 0 5px 0 0 #cbd5e1, 0 10px 20px -6px rgba(30, 58, 138, 0.08);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+      will-change: transform;
+    }
+    .card-3d:hover {
+      transform: translateY(-3px);
+      border-color: #1d4ed8;
+      box-shadow: 0 8px 0 0 #facc15, 0 16px 28px -8px rgba(30, 58, 138, 0.16);
+    }
+    .card-3d-blue {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      border: 1.5px solid #1e40af;
+      border-radius: 1.25rem;
+      box-shadow: 0 6px 0 0 #eab308, 0 16px 32px -8px rgba(15, 23, 42, 0.25);
+    }
+    .nav-btn {
+      color: #cbd5e1;
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      transition: all 0.15s ease;
+    }
+    .nav-btn:hover {
+      color: #ffffff;
+      border-color: #facc15;
+    }
+    .nav-btn.active {
+      background: #facc15;
+      color: #0f172a;
+      border-color: #fef08a;
+      font-weight: 800;
+      box-shadow: 0 3px 0 0 #ca8a04;
+    }
+    .subtab-btn {
+      background: #f8fafc;
+      color: #334155;
+      border: 1.5px solid #cbd5e1;
+      transition: all 0.15s ease;
+    }
+    .subtab-btn:hover {
+      border-color: #1d4ed8;
+      color: #1e40af;
+    }
+    .subtab-btn.active {
+      background: #1e40af;
+      color: #ffffff;
+      border-color: #1e3a8a;
+      box-shadow: 0 3px 0 0 #facc15;
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #e2e8f0; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-yellow-300 selection:text-slate-950">
 
+  <!-- Clean 3D Blue & Yellow Background Image Layer -->
+  <div id="bg-image-layer"></div>
+  <div id="bg-scrim-layer"></div>
+  <img id="hidden-bg-loader" src="assets/bg_3d_blue_yellow.jpg" alt="3D Background" class="hidden" />
+
+  <!-- Toast Notification -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 hidden px-4 py-3 rounded-xl bg-blue-900 text-white text-xs font-bold shadow-xl border-b-4 border-yellow-400 flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+    <span id="toast-msg">Berhasil disalin!</span>
+  </div>
+
+  <!-- Lightbox Modal for Fullscreen Screenshot Inspection -->
+  <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 flex items-center justify-center p-4">
+    <div class="relative max-w-6xl w-full bg-white rounded-2xl p-5 border-2 border-blue-900 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+        <div>
+          <span id="lightbox-badge" class="px-2.5 py-1 rounded-md text-xs font-extrabold bg-yellow-400 text-slate-950 mr-2">SCREENSHOT</span>
+          <h3 id="lightbox-title" class="inline text-base font-extrabold text-slate-900">Judul Screenshot</h3>
+        </div>
+        <button id="lightbox-close-btn" type="button" onclick="closeLightbox()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-blue-800 text-white text-xs font-bold transition">
+          Tutup (ESC)
+        </button>
+      </div>
+      <div class="max-h-[74vh] overflow-auto flex justify-center bg-slate-100 rounded-xl p-3 border border-slate-200">
+        <img id="lightbox-img" src="assets/screenshots/ss_01_import_dataset.png" alt="Preview Screenshot" class="max-w-full h-auto rounded-lg shadow-sm" />
+      </div>
+      <p id="lightbox-desc" class="mt-3 text-xs text-slate-600 font-medium text-center"></p>
+    </div>
+  </div>
+
+  <!-- Master Prompt Modal -->
+  <div id="prompt-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full bg-white rounded-2xl p-5 border-2 border-blue-900 shadow-2xl flex flex-col max-h-[86vh]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div>
+          <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-yellow-400 text-slate-950">ANTI GRAVITY / VS CODE</span>
+          <h3 class="text-lg font-extrabold text-slate-900 mt-1">Master Prompt Web Interaktif 3D Blue &amp; Yellow BNSP</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="copy-master-prompt-btn" type="button" onclick="copyMasterPrompt()" class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow-sm transition">
+            Salin Prompt Sekali Klik
+          </button>
+          <button id="close-prompt-modal-btn" type="button" onclick="togglePromptModal(false)" class="px-3 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition">
+            Tutup
+          </button>
+        </div>
+      </div>
+      <pre id="master-prompt-content" class="mt-3 p-4 rounded-xl bg-slate-900 text-xs text-yellow-100 overflow-y-auto whitespace-pre-wrap leading-relaxed flex-1"></pre>
+    </div>
+  </div>
+
+  <!-- TOP STICKY HEADER NAVIGATION (NAVY BLUE & GOLDEN YELLOW) -->
+  <header class="sticky top-0 z-40 bg-slate-900 border-b-4 border-yellow-400 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand / Folder Identity -->
+      <button type="button" onclick="switchSection('beranda')" class="flex items-center gap-3 text-left group">
+        <div class="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center text-slate-950 font-extrabold text-sm shadow-sm group-hover:bg-yellow-300 transition">
+          BNSP
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm md:text-base font-extrabold tracking-tight text-white group-hover:text-yellow-300 transition">Tugas_Fadli Kurnia Ramadhan/</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-extrabold rounded bg-blue-700 text-yellow-300 border border-blue-500">UK 1–UK 6</span>
+          </div>
+          <p class="text-[11px] text-slate-300">Portal Presentasi &amp; Evaluasi Kode Solusi AI • Universitas Pendidikan Indonesia</p>
+        </div>
+      </button>
+
+      <!-- Main Header Menu -->
+      <nav class="flex flex-wrap items-center gap-1.5" aria-label="Menu Utama">
+        <button type="button" id="nav-beranda" onclick="switchSection('beranda')" class="nav-btn active px-3.5 py-2 rounded-lg text-xs font-bold">
+          Folder Utama
+        </button>
+        <button type="button" id="nav-tugas1" onclick="switchSection('tugas1')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+          Tugas1 <span class="hidden md:inline text-[10px] opacity-80">(UK 1–2)</span>
+        </button>
+        <button type="button" id="nav-tugas2" onclick="switchSection('tugas2')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+          Tugas2 <span class="hidden md:inline text-[10px] opacity-80">(UK 3–4)</span>
+        </button>
+        <button type="button" id="nav-tugas3" onclick="switchSection('tugas3')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+          Tugas3 <span class="hidden md:inline text-[10px] opacity-80">(UK 5–6)</span>
+        </button>
+        <button type="button" id="nav-kuis" onclick="switchSection('kuis')" class="nav-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+          Penjelasan Kode &amp; Kuis (20 Soal)
+        </button>
+      </nav>
+
+      <!-- Utility Controls -->
+      <div class="flex items-center gap-2">
+        <button type="button" id="open-prompt-btn" onclick="togglePromptModal(true)" class="px-3 py-2 rounded-lg text-xs font-extrabold bg-blue-700 hover:bg-blue-600 text-yellow-300 border border-blue-500 transition">
+          Master Prompt Anti Gravity
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-7">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 0: BERANDA & POHON FOLDER Tugas_Fadli Kurnia Ramadhan       -->
+    <!-- =================================================================== -->
+    <section id="sec-beranda" class="space-y-6">
+      <!-- Hero Banner Blue & Yellow 3D -->
+      <div class="card-3d-blue p-6 md:p-8 text-white">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-yellow-400 text-slate-950 text-xs font-extrabold tracking-wide">
+              SERTIFIKASI KOMPETENSI BNSP — KLASTER PENERAPAN AI
+            </div>
+            <h1 class="text-2xl md:text-4xl font-extrabold text-white leading-tight">
+              Presentasi End-to-End <span class="text-yellow-300">Tugas 1, Tugas 2, &amp; Tugas 3</span>
+            </h1>
+            <p class="text-sm text-blue-100 leading-relaxed">
+              Ruang presentasi terstruktur <strong>Fadli Kurnia Ramadhan</strong> yang memuat seluruh <strong>18 berkas keluaran wajib</strong> pada folder <code>Tugas_Fadli Kurnia Ramadhan/</code>, grafik visualisasi data, simulator prediksi <em>customer churn</em>, <strong>26 gambar screenshot asli Google Colab</strong>, serta modul bedah kode dan <strong>20 soal latihan pilihan ganda</strong>.
+            </p>
+            <div class="flex flex-wrap gap-2.5 pt-1">
+              <button type="button" onclick="switchSection('tugas1')" class="px-4 py-2.5 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-extrabold text-xs shadow transition">
+                Buka Tugas 1 (UK 1 &amp; UK 2)
+              </button>
+              <button type="button" onclick="switchSection('tugas2')" class="px-4 py-2.5 rounded-lg bg-white hover:bg-slate-100 text-blue-900 font-extrabold text-xs shadow transition">
+                Buka Tugas 2 (UK 3 &amp; UK 4)
+              </button>
+              <button type="button" onclick="switchSection('tugas3')" class="px-4 py-2.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white border border-blue-400 font-extrabold text-xs transition">
+                Buka Tugas 3 (UK 5 &amp; UK 6)
+              </button>
+              <button type="button" onclick="switchSection('kuis')" class="px-4 py-2.5 rounded-lg bg-slate-900/80 hover:bg-slate-900 text-yellow-300 border border-yellow-400/60 font-extrabold text-xs transition">
+                Latihan 20 Soal &amp; Bedah Kode
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Highlights Grid -->
+          <div class="lg:col-span-5 grid grid-cols-2 gap-3.5">
+            <div class="bg-white text-slate-900 rounded-xl p-4 border-b-4 border-yellow-400 shadow">
+              <div class="text-[11px] font-extrabold text-blue-800 uppercase">TUGAS 1 (UK 1 &amp; UK 2)</div>
+              <div class="text-2xl font-extrabold text-slate-900 mt-1">10 / 9 / 12</div>
+              <div class="text-xs text-slate-600 mt-1">10 Baris Bersih • 9 Karantina • 12 Temuan Validasi</div>
+            </div>
+            <div class="bg-white text-slate-900 rounded-xl p-4 border-b-4 border-blue-600 shadow">
+              <div class="text-[11px] font-extrabold text-blue-800 uppercase">TUGAS 2 (UK 3 &amp; UK 4)</div>
+              <div class="text-2xl font-extrabold text-slate-900 mt-1">78,12%</div>
+              <div class="text-xs text-slate-600 mt-1">Akurasi Uji Pipeline (128:32) &amp; Aplikasi Gradio</div>
+            </div>
+            <div class="bg-white text-slate-900 rounded-xl p-4 border-b-4 border-blue-600 shadow">
+              <div class="text-[11px] font-extrabold text-blue-800 uppercase">TUGAS 3 (UK 5 &amp; UK 6)</div>
+              <div class="text-xl font-extrabold text-slate-900 mt-1">HIJAU → MERAH → HIJAU</div>
+              <div class="text-xs text-slate-600 mt-1">Deteksi Insiden INC-H3-001 &amp; Verifikasi Perbaikan</div>
+            </div>
+            <div class="bg-white text-slate-900 rounded-xl p-4 border-b-4 border-yellow-400 shadow">
+              <div class="text-[11px] font-extrabold text-blue-800 uppercase">STRUKTUR REPOSITORI</div>
+              <div class="text-2xl font-extrabold text-slate-900 mt-1">18 Berkas</div>
+              <div class="text-xs text-slate-600 mt-1">Sesuai Pohon Folder Resmi <code>Instruksi tugas.pdf</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Folder Tree Explorer: Tugas_Fadli Kurnia Ramadhan -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 surface-card p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+            <div>
+              <h2 class="text-base font-extrabold text-slate-900">Pohon Folder Pengumpulan</h2>
+              <code class="text-xs font-bold text-blue-800">Tugas_Fadli Kurnia Ramadhan/</code>
+            </div>
+            <span class="px-2.5 py-1 rounded-md bg-blue-50 text-blue-800 border border-blue-200 text-xs font-extrabold">18 Berkas</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3">Klik nama berkas di bawah ini untuk menampilkan fungsi teknis dan ringkasan isinya:</p>
+          <div id="folder-tree-list" class="space-y-1.5 max-h-[410px] overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- File Inspector Card -->
+        <div class="lg:col-span-7 surface-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+              <div>
+                <span id="inspector-folder-badge" class="px-2.5 py-0.5 rounded text-[11px] font-extrabold bg-yellow-400 text-slate-950">Tugas 1/</span>
+                <h3 id="inspector-filename" class="text-lg font-extrabold text-blue-950 mt-1 font-mono">Tugas1.ipynb</h3>
+              </div>
+              <button type="button" id="inspector-jump-btn" onclick="switchSection('tugas1')" class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold transition">
+                Lihat Detail Tugas →
+              </button>
+            </div>
+            <div class="mt-4 space-y-3.5">
+              <div>
+                <div class="text-xs font-extrabold text-blue-900 uppercase tracking-wider">Peran &amp; Ketentuan Berkas (Instruksi Resmi BNSP)</div>
+                <p id="inspector-purpose" class="text-sm text-slate-700 mt-1 leading-relaxed"></p>
+              </div>
+              <div>
+                <div class="text-xs font-extrabold text-blue-900 uppercase tracking-wider">Cuplikan Isi &amp; Hasil Verifikasi</div>
+                <pre id="inspector-preview" class="mt-1.5 p-4 rounded-xl bg-slate-900 text-xs text-yellow-200 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-60"></pre>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600 font-medium">
+            <span id="inspector-uk-tag">Unit Kompetensi: UK 1 &amp; UK 2</span>
+            <span>Pilih menu Tugas1, Tugas2, atau Tugas3 di atas untuk visualisasi penuh</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: TUGAS 1 (SESI 1 — UK 1 & UK 2)                           -->
+    <!-- =================================================================== -->
+    <section id="sec-tugas1" class="hidden space-y-6">
+      <!-- Header Banner Tugas 1 -->
+      <div class="card-3d-blue p-5 text-white flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-yellow-400 text-slate-950">SESI 1 • UNJUK KERJA UK 1 &amp; UK 2</span>
+          <h2 class="text-xl md:text-2xl font-extrabold text-white mt-1">Tugas 1 — Melakukan Pemasukan Data (UK 1) &amp; Memastikan Validitas Data (UK 2)</h2>
+          <p class="text-xs text-blue-100 mt-0.5">Folder: <code>Tugas_Fadli Kurnia Ramadhan/Tugas 1/</code> • Notebook: <code>Tugas1.ipynb</code> • Sumber: <code>data_pelanggan_latihan.csv</code> (20 Baris × 5 Kolom)</p>
+        </div>
+        <button type="button" onclick="switchSection('tugas2')" class="px-4 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-extrabold transition">
+          Lanjut ke Tugas 2 (UK 3–4) →
+        </button>
+      </div>
+
+      <!-- Charts Row Tugas 1 -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="surface-card p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm font-extrabold text-slate-900">Visualisasi 1: Hasil Penyaringan 20 Baris Data Awal (UK 2)</h3>
+            <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 text-[11px] font-bold">10 Bersih • 9 Karantina • 1 Duplikat</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3">Proporsi hasil validasi setelah normalisasi huruf kecil (<code>.title()</code>) dan deduplikasi <code>C0015</code>:</p>
+          <div class="relative h-64">
+            <canvas id="chart-t1-split"></canvas>
+          </div>
+        </div>
+
+        <div class="surface-card p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm font-extrabold text-slate-900">Visualisasi 2: Rincian 12 Temuan pada <code>catatan_validasi.csv</code></h3>
+            <span class="px-2 py-0.5 rounded bg-yellow-100 text-yellow-900 text-[11px] font-bold">Total = 12 Temuan</span>
+          </div>
+          <p class="text-xs text-slate-600 mb-3">Distribusi jumlah temuan per kategori aturan pemeriksaan kualitas data pada UK 2:</p>
+          <div class="relative h-64">
+            <canvas id="chart-t1-issues"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Data Table Explorer Tugas 1 -->
+      <div class="surface-card p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Tabel Isi Ketiga Berkas CSV Keluaran Tugas 1 (UK 2)</h3>
+            <p class="text-xs text-slate-600">Pilih berkas CSV di samping untuk melihat seluruh baris hasil eksekusi <code>Tugas1.ipynb</code>:</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" id="t1-tab-bersih" onclick="renderT1Table('bersih')" class="subtab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold">
+              data_pelanggan_bersih.csv (10 Baris)
+            </button>
+            <button type="button" id="t1-tab-karantina" onclick="renderT1Table('karantina')" class="subtab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold">
+              data_karantina.csv (9 Baris)
+            </button>
+            <button type="button" id="t1-tab-catatan" onclick="renderT1Table('catatan')" class="subtab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold">
+              catatan_validasi.csv (12 Temuan)
+            </button>
+          </div>
+        </div>
+        <div id="t1-table-container" class="overflow-x-auto rounded-xl border border-slate-200"></div>
+      </div>
+
+      <!-- Gallery 8 Real Screenshots Tugas 1 -->
+      <div class="surface-card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Galeri 8 Screenshot Aktual Google Colab — <code>Tugas1.ipynb</code> (UK 1 &amp; UK 2)</h3>
+            <p class="text-xs text-slate-600">Klik pada gambar screenshot untuk memperbesar tampilan penuh (Lightbox):</p>
+          </div>
+          <span class="px-3 py-1 rounded-md bg-yellow-400 text-slate-950 text-xs font-extrabold">8 Screenshot Asli</span>
+        </div>
+        <div id="t1-screenshots-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: TUGAS 2 (SESI 2 — UK 3 & UK 4)                           -->
+    <!-- =================================================================== -->
+    <section id="sec-tugas2" class="hidden space-y-6">
+      <!-- Header Banner Tugas 2 -->
+      <div class="card-3d-blue p-5 text-white flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-yellow-400 text-slate-950">SESI 2 • UNJUK KERJA UK 3 &amp; UK 4</span>
+          <h2 class="text-xl md:text-2xl font-extrabold text-white mt-1">Tugas 2 — Mengintegrasikan Komponen Solusi AI (UK 3) &amp; Memasang Solusi AI (UK 4)</h2>
+          <p class="text-xs text-blue-100 mt-0.5">Folder: <code>Tugas_Fadli Kurnia Ramadhan/Tugas 2/</code> • Notebook: <code>Tugas2.ipynb</code> • Dataset: <code>data_pelanggan_model_hari2.csv</code> (160 Baris × 7 Kolom)</p>
+        </div>
+        <button type="button" onclick="switchSection('tugas3')" class="px-4 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-extrabold transition">
+          Lanjut ke Tugas 3 (UK 5–6) →
+        </button>
+      </div>
+
+      <!-- Interactive Live Churn Predictor + Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Live Gradio Simulator -->
+        <div class="lg:col-span-7 surface-card p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-800 text-yellow-300">SIMULATOR INTERAKTIF UK 4 (app_hari2.py)</span>
+              <h3 class="text-base font-extrabold text-slate-900 mt-1">Demo Prediksi Churn Pelanggan (Pipeline LogisticRegression)</h3>
+            </div>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="applySmokeTest(1)" class="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition">
+                Smoke Test 1 (94,3%)
+              </button>
+              <button type="button" onclick="applySmokeTest(2)" class="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold transition">
+                Smoke Test 2 (1,8%)
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <label for="sim-age" class="flex justify-between text-xs font-bold text-slate-700">
+                <span>1. Umur Pelanggan (<code>age</code>)</span>
+                <span id="sim-age-val" class="font-mono text-blue-800 font-extrabold">28 thn</span>
+              </label>
+              <input id="sim-age" type="range" min="18" max="100" step="1" value="28" oninput="updateChurnSimulator()" class="w-full mt-2 accent-blue-700 cursor-pointer" />
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">2. Jenis Kontrak (<code>contract</code>)</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="btn-contract-monthly" onclick="setSimContract('Monthly')" class="py-1.5 rounded-lg text-xs font-extrabold bg-blue-700 text-white border border-blue-800 transition">
+                  Monthly
+                </button>
+                <button type="button" id="btn-contract-annual" onclick="setSimContract('Annual')" class="py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 transition">
+                  Annual
+                </button>
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <label for="sim-charge" class="flex justify-between text-xs font-bold text-slate-700">
+                <span>3. Tagihan Bulanan (<code>monthly_charge</code>)</span>
+                <span id="sim-charge-val" class="font-mono text-blue-800 font-extrabold">Rp 185.000</span>
+              </label>
+              <input id="sim-charge" type="range" min="50000" max="250000" step="5000" value="185000" oninput="updateChurnSimulator()" class="w-full mt-2 accent-blue-700 cursor-pointer" />
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <label for="sim-tenure" class="flex justify-between text-xs font-bold text-slate-700">
+                <span>4. Lama Berlangganan (<code>tenure_months</code>)</span>
+                <span id="sim-tenure-val" class="font-mono text-blue-800 font-extrabold">3 bulan</span>
+              </label>
+              <input id="sim-tenure" type="range" min="1" max="72" step="1" value="3" oninput="updateChurnSimulator()" class="w-full mt-2 accent-blue-700 cursor-pointer" />
+            </div>
+
+            <div class="sm:col-span-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <label for="sim-calls" class="flex justify-between text-xs font-bold text-slate-700">
+                <span>5. Jumlah Panggilan Dukungan Teknis (<code>support_calls</code>)</span>
+                <span id="sim-calls-val" class="font-mono text-blue-800 font-extrabold">5 panggilan</span>
+              </label>
+              <input id="sim-calls" type="range" min="0" max="10" step="1" value="5" oninput="updateChurnSimulator()" class="w-full mt-2 accent-blue-700 cursor-pointer" />
+            </div>
+          </div>
+
+          <!-- Output Result Box -->
+          <div id="sim-result-box" class="p-4 rounded-xl bg-slate-900 border-l-8 border-yellow-400 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-300">Output Fungsi <code>predict_churn()</code> (Threshold = 0.50):</div>
+              <div id="sim-output-text" class="text-lg md:text-xl font-extrabold text-yellow-300 font-mono mt-0.5">RISIKO TINGGI | peluang churn: 94.3%</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[11px] text-slate-300">Status Klasifikasi</div>
+              <span id="sim-badge" class="inline-block mt-0.5 px-3 py-1 rounded-md text-xs font-extrabold bg-red-600 text-white">RISIKO TINGGI (&gt;= 50%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Tugas 2 -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="surface-card p-4">
+            <h3 class="text-xs font-extrabold text-slate-900 mb-2">Visualisasi 1: Pembagian Data Latih/Uji &amp; Kelas Target (160 Baris)</h3>
+            <div class="relative h-44">
+              <canvas id="chart-t2-split"></canvas>
+            </div>
+          </div>
+          <div class="surface-card p-4">
+            <h3 class="text-xs font-extrabold text-slate-900 mb-2">Visualisasi 2: Akurasi Uji (78,12%) &amp; Hasil Smoke Test</h3>
+            <div class="relative h-44">
+              <canvas id="chart-t2-metrics"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery 9 Real Screenshots Tugas 2 -->
+      <div class="surface-card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Galeri 9 Screenshot Aktual Google Colab — <code>Tugas2.ipynb</code> (UK 3 &amp; UK 4)</h3>
+            <p class="text-xs text-slate-600">Klik pada gambar screenshot untuk memperbesar tampilan penuh:</p>
+          </div>
+          <span class="px-3 py-1 rounded-md bg-yellow-400 text-slate-950 text-xs font-extrabold">9 Screenshot Asli</span>
+        </div>
+        <div id="t2-screenshots-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: TUGAS 3 (SESI 3 — UK 5 & UK 6)                           -->
+    <!-- =================================================================== -->
+    <section id="sec-tugas3" class="hidden space-y-6">
+      <!-- Header Banner Tugas 3 -->
+      <div class="card-3d-blue p-5 text-white flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-yellow-400 text-slate-950">SESI 3 • UNJUK KERJA UK 5 &amp; UK 6</span>
+          <h2 class="text-xl md:text-2xl font-extrabold text-white mt-1">Tugas 3 — Merencanakan Perawatan Solusi AI (UK 5) &amp; Merawat Solusi AI (UK 6)</h2>
+          <p class="text-xs text-blue-100 mt-0.5">Folder: <code>Tugas_Fadli Kurnia Ramadhan/Tugas 3/</code> • Notebook: <code>Tugas3.ipynb</code> • Siklus MLOps: Rencanakan → Pantau → Deteksi → Karantina → Verifikasi</p>
+        </div>
+        <button type="button" onclick="switchSection('kuis')" class="px-4 py-2 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-extrabold transition">
+          Buka Kuis 20 Soal &amp; Bedah Kode →
+        </button>
+      </div>
+
+      <!-- Interactive Batch Monitoring Simulator & Chart Tugas 3 -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 surface-card p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900">Visualisasi Monitoring 3 Batch Operasional vs Ambang Batas (UK 6)</h3>
+              <p class="text-xs text-slate-600">Perbandingan <code>missing_rate_pct</code>, <code>invalid_rate_pct</code>, <code>max_mean_shift_pct</code>, dan <code>high_risk_delta_pp</code>:</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded bg-blue-50 text-blue-800 text-[11px] font-mono font-bold">laporan_monitoring_hari3.csv</span>
+          </div>
+          <div class="relative h-72">
+            <canvas id="chart-t3-monitoring"></canvas>
+          </div>
+        </div>
+
+        <!-- Interactive Batch Inspector -->
+        <div class="lg:col-span-5 surface-card p-5 flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-900 mb-1">Simulator Pemeriksaan Batch (<code>check_batch</code>)</h3>
+            <p class="text-xs text-slate-600 mb-3">Pilih batch di bawah ini untuk menampilkan metrik hasil audit dan tindakan MLOps:</p>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+              <button type="button" id="btn-batch-normal" onclick="selectBatch('normal')" class="py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300 transition">
+                1. Normal
+              </button>
+              <button type="button" id="btn-batch-bermasalah" onclick="selectBatch('bermasalah')" class="py-2 rounded-lg text-xs font-extrabold bg-red-600 text-white transition">
+                2. Bermasalah
+              </button>
+              <button type="button" id="btn-batch-perbaikan" onclick="selectBatch('perbaikan')" class="py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300 transition">
+                3. Perbaikan
+              </button>
+            </div>
+            <div id="batch-detail-card" class="space-y-2 text-xs"></div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600">
+            Baseline (160 baris): High-Risk Rate = <strong>38,12%</strong> | Accuracy = <strong>0,8438</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maintenance Plan & Incident Log Tables -->
+      <div class="surface-card p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h3 class="text-base font-extrabold text-slate-900">Tabel Rencana Perawatan (UK 5) &amp; Log Insiden <code>INC-H3-001</code> (UK 6)</h3>
+          <div class="flex gap-2">
+            <button type="button" id="t3-tab-plan" onclick="renderT3Table('plan')" class="subtab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold">
+              rencana_perawatan_hari3_terisi.csv (7 Area)
+            </button>
+            <button type="button" id="t3-tab-incident" onclick="renderT3Table('incident')" class="subtab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold">
+              log_insiden_hari3_terisi.csv (INC-H3-001)
+            </button>
+          </div>
+        </div>
+        <div id="t3-table-container" class="overflow-x-auto rounded-xl border border-slate-200"></div>
+      </div>
+
+      <!-- Gallery 9 Real Screenshots Tugas 3 -->
+      <div class="surface-card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Galeri 9 Screenshot Aktual &amp; Grafik Monitoring — <code>Tugas3.ipynb</code> (UK 5 &amp; UK 6)</h3>
+            <p class="text-xs text-slate-600">Klik pada gambar untuk memperbesar tampilan penuh:</p>
+          </div>
+          <span class="px-3 py-1 rounded-md bg-yellow-400 text-slate-950 text-xs font-extrabold">9 Visual Asli</span>
+        </div>
+        <div id="t3-screenshots-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: PENJELASAN KODE & KUIS INTERAKTIF 20 SOAL                 -->
+    <!-- =================================================================== -->
+    <section id="sec-kuis" class="hidden space-y-6">
+      <!-- Top Banner & Mode Switcher -->
+      <div class="card-3d-blue p-5 text-white flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-0.5 rounded text-xs font-extrabold bg-yellow-400 text-slate-950">MODUL EVALUASI &amp; BELAJAR MANDIRI</span>
+          <h2 class="text-xl md:text-2xl font-extrabold text-white mt-1">Penjelasan Kode Terpadu (Tugas 1–3) &amp; Kuis Interaktif 20 Soal Pilihan Ganda</h2>
+          <p class="text-xs text-blue-100 mt-0.5">Uji penguasaan materi Sertifikasi BNSP AI melalui 20 soal latihan pilihan ganda dan 12 kartu bedah kode inti.</p>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" id="mode-btn-quiz" onclick="switchStudyMode('quiz')" class="px-4 py-2 rounded-lg text-xs font-extrabold bg-yellow-400 text-slate-950 shadow transition">
+            Kuis Pilihan Ganda (20 Soal)
+          </button>
+          <button type="button" id="mode-btn-code" onclick="switchStudyMode('code')" class="px-4 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white border border-blue-400 transition">
+            Bedah Kode Tugas 1, 2, &amp; 3
+          </button>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW A: 20-QUESTION INTERACTIVE MULTIPLE CHOICE QUIZ -->
+      <div id="study-quiz-view" class="space-y-5">
+        <div class="surface-card p-4 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-4">
+            <div>
+              <div class="text-[11px] text-slate-500 uppercase font-extrabold">Skor Latihan Anda</div>
+              <div class="text-2xl font-extrabold text-blue-900"><span id="quiz-score">0</span> / <span id="quiz-answered">0</span> <span class="text-xs text-slate-500 font-semibold">(Total 20 Soal)</span></div>
+            </div>
+            <div class="w-44 bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="quiz-progress-bar" class="bg-blue-700 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" id="qfilter-all" onclick="filterQuiz('all')" class="subtab-btn active px-3 py-1.5 rounded-lg text-xs font-bold">
+              Semua (20)
+            </button>
+            <button type="button" id="qfilter-t1" onclick="filterQuiz('Tugas 1')" class="subtab-btn px-3 py-1.5 rounded-lg text-xs font-bold">
+              Tugas 1 • UK 1–2 (7)
+            </button>
+            <button type="button" id="qfilter-t2" onclick="filterQuiz('Tugas 2')" class="subtab-btn px-3 py-1.5 rounded-lg text-xs font-bold">
+              Tugas 2 • UK 3–4 (7)
+            </button>
+            <button type="button" id="qfilter-t3" onclick="filterQuiz('Tugas 3')" class="subtab-btn px-3 py-1.5 rounded-lg text-xs font-bold">
+              Tugas 3 • UK 5–6 (6)
+            </button>
+            <button type="button" onclick="resetQuiz()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition">
+              Reset Kuis
+            </button>
+          </div>
+        </div>
+
+        <div id="quiz-questions-container" class="space-y-4"></div>
+      </div>
+
+      <!-- SUB-VIEW B: CODE WALKTHROUGH EXPLORER (TUGAS 1, 2, 3) -->
+      <div id="study-code-view" class="hidden space-y-5">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="cfilter-all" onclick="filterCodeCards('all')" class="subtab-btn active px-3.5 py-2 rounded-lg text-xs font-bold">
+            Semua Modul Kode (12 Blok Inti)
+          </button>
+          <button type="button" id="cfilter-t1" onclick="filterCodeCards('Tugas 1')" class="subtab-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+            Kode Tugas 1 (UK 1 &amp; UK 2)
+          </button>
+          <button type="button" id="cfilter-t2" onclick="filterCodeCards('Tugas 2')" class="subtab-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+            Kode Tugas 2 (UK 3 &amp; UK 4)
+          </button>
+          <button type="button" id="cfilter-t3" onclick="filterCodeCards('Tugas 3')" class="subtab-btn px-3.5 py-2 rounded-lg text-xs font-bold">
+            Kode Tugas 3 (UK 5 &amp; UK 6)
+          </button>
+        </div>
+        <div id="code-cards-container" class="grid grid-cols-1 lg:grid-cols-2 gap-5"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-10 bg-slate-900 border-t-4 border-yellow-400 py-4 px-4 text-xs text-slate-300">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <span><strong class="text-yellow-400">Tugas_Fadli Kurnia Ramadhan</strong> — Sertifikasi Kompetensi BNSP AI (Sesi 1, Sesi 2, &amp; Sesi 3)</span>
+      <span>UK 1 • UK 2 • UK 3 • UK 4 • UK 5 • UK 6 — Terverifikasi Lengkap</span>
+    </div>
+  </footer>
+
+  <!-- APPLICATION DATA & LOGIC (FAST, ZERO-LAG) -->
+  <script>
+    function initBackgroundLayer() {
+      const hiddenImg = document.getElementById('hidden-bg-loader');
+      const bgDiv = document.getElementById('bg-image-layer');
+      if (hiddenImg && bgDiv && hiddenImg.src) {
+        bgDiv.style.backgroundImage = 'url("' + hiddenImg.src + '")';
+      }
+    }
+
+    const FOLDER_FILES = [
+      {
+        folder: 'Tugas 1/', section: 'tugas1', uk: 'UK 1 & UK 2', name: 'Tugas1.ipynb',
+        purpose: 'Notebook utama Sesi 1 yang menggabungkan script UK 1 (Memasukkan Data) dan UK 2 (Memvalidasi Data) secara berurutan.',
+        preview: 'Langkah 1–5 (UK 1): pd.read_csv("data_pelanggan_latihan.csv", dtype={"customer_id": "string"}) -> (20, 5)\nLangkah 6–11 (UK 2): Normalisasi .title(), deduplikasi C0015 (keep="first"), & 6 aturan validasi -> 10 bersih, 9 karantina, 12 temuan.'
+      },
+      {
+        folder: 'Tugas 1/', section: 'tugas1', uk: 'UK 1 & UK 2', name: 'Tugas1_Presentasi_Script.pdf',
+        purpose: 'Dokumen presentasi PDF yang memuat tangkapan layar script UK 1 dan UK 2 beserta penjelasan alur kerjanya.',
+        preview: '10 halaman slide lanskap berisi alur UK 1 ke UK 2, tangkapan layar eksekusi Google Colab, dan ringkasan 3 berkas CSV keluaran.'
+      },
+      {
+        folder: 'Tugas 1/', section: 'tugas1', uk: 'UK 2', name: 'data_pelanggan_bersih.csv',
+        purpose: 'Berkas keluaran pertama UK 2 berisi 10 baris data pelanggan yang valid dan bersih.',
+        preview: 'customer_id,age,contract,monthly_charge,churn\nC0001,25,Monthly,125000,No\nC0002,40,Annual,90000,No\nC0004,31,Monthly,110000,No\nC0008,29,Annual,105000,No\nC0012,27,Annual,88000,No\nC0013,33,Monthly,115000,Yes\nC0014,50,Annual,99000,No\nC0015,42,Monthly,123000,No\nC0017,22,Monthly,80000,Yes\nC0018,59,Annual,95000,No'
+      },
+      {
+        folder: 'Tugas 1/', section: 'tugas1', uk: 'UK 2', name: 'data_karantina.csv',
+        purpose: 'Berkas keluaran kedua UK 2 berisi 9 baris data pelanggan yang dikarantina beserta alasan pelanggarannya.',
+        preview: 'C0003 (age=17), C0005 (monthly_charge=-50000), C0006 (age=<NA>), C0007 (contract=Weekly), C0009 (age=150), C0010 (monthly_charge=abc), C0011 (churn=Maybe), Baris-17 (customer_id=<NA>), C0019 (monthly_charge=<NA>).'
+      },
+      {
+        folder: 'Tugas 1/', section: 'tugas1', uk: 'UK 2', name: 'catatan_validasi.csv',
+        purpose: 'Berkas keluaran ketiga UK 2 berisi dokumentasi seluruh 12 temuan hasil validasi.',
+        preview: '12 temuan = 2 normalisasi huruf kecil (C0004 monthly->Monthly, C0018 annual->Annual) + 1 duplikat dihapus (C0015 baris 16) + 9 baris dikarantina.'
+      },
+      {
+        folder: 'Tugas 2/', section: 'tugas2', uk: 'UK 3 & UK 4', name: 'Tugas2.ipynb',
+        purpose: 'Notebook utama Sesi 2 yang memuat script UK 3 (Mengintegrasikan Komponen Solusi AI) dan UK 4 (Memasang Solusi AI).',
+        preview: 'Bagian A–E (UK 3): Validasi 160 baris, train_test_split (128:32), Pipeline (ColumnTransformer + LogisticRegression), akurasi 0.7812, predict_churn() & Smoke Test.\nBagian F–G (UK 4): Pemasangan gr.Interface Gradio & ekspor app_hari2.py.'
+      },
+      {
+        folder: 'Tugas 2/', section: 'tugas2', uk: 'UK 3 & UK 4', name: 'Tugas2_Presentasi_Script.pdf',
+        purpose: 'Dokumen presentasi PDF yang memuat tangkapan layar dan penjelasan alur kerja script UK 3 dan UK 4.',
+        preview: '12 halaman dokumentasi teknis lengkap mulai dari persiapan lingkungan, pelatihan Pipeline, smoke test, hingga pengujian antarmuka web Gradio.'
+      },
+      {
+        folder: 'Tugas 2/', section: 'tugas2', uk: 'UK 3 & UK 4', name: 'requirements_hari2_terpasang.txt',
+        purpose: 'Daftar versi pustaka aktual yang terpasang di lingkungan Google Colab saat pelatihan dan pemasangan solusi AI.',
+        preview: 'pandas==2.2.3\nscikit-learn==1.6.1\njoblib==1.6.0\ngradio==6.31.0'
+      },
+      {
+        folder: 'Tugas 2/', section: 'tugas2', uk: 'UK 4', name: 'app_hari2.py',
+        purpose: 'Script aplikasi demo prediksi mandiri berbasis Gradio yang memuat model_churn_hari2.joblib.',
+        preview: 'import joblib, pandas as pd, gradio as gr\nmodel = joblib.load("model_churn_hari2.joblib")\ndef predict_churn(age, contract, monthly_charge, tenure_months, support_calls): ...\ndemo = gr.Interface(...)\ndemo.launch()'
+      },
+      {
+        folder: 'Tugas 2/', section: 'tugas2', uk: 'UK 3', name: 'metadata_model_hari2.json',
+        purpose: 'Metadata kontrak model yang menyimpan daftar fitur, ambang probabilitas (0.5), akurasi uji (0.7812), dan versi pustaka.',
+        preview: '{\n  "model_name": "demo_churn_hari2",\n  "model_version": "1.0-workshop",\n  "features": ["age", "contract", "monthly_charge", "tenure_months", "support_calls"],\n  "threshold": 0.5,\n  "training_rows": 128,\n  "test_rows": 32,\n  "test_accuracy": 0.7812\n}'
+      },
+      {
+        folder: 'Tugas 2/', section: 'tugas2', uk: 'UK 3', name: 'model_churn_hari2.joblib',
+        purpose: 'Berkas biner objek sklearn.pipeline.Pipeline hasil pelatihan pada data latih Hari 2.',
+        preview: 'Objek Pipeline scikit-learn (3.361 byte): ColumnTransformer(StandardScaler + OneHotEncoder) -> LogisticRegression(max_iter=1000, random_state=42).'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 5 & UK 6', name: 'Tugas3.ipynb',
+        purpose: 'Notebook utama Sesi 3 yang memuat script UK 5 (Merencanakan Perawatan Solusi AI) dan UK 6 (Merawat Solusi AI).',
+        preview: 'Bagian A–F (UK 5): Inventaris 8 artefak, verifikasi versi model, rencana perawatan DITINJAU, & kontrak THRESHOLDS.\nBagian G–M (UK 6): check_batch() pada batch normal (HIJAU), bermasalah (MERAH), log insiden INC-H3-001, & verifikasi perbaikan (HIJAU).'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 5 & UK 6', name: 'Tugas3_Presentasi_Script.pdf',
+        purpose: 'Dokumen presentasi PDF yang memuat tangkapan layar dan penjelasan alur kerja script UK 5 dan UK 6.',
+        preview: '12 halaman dokumentasi MLOps mencakup rencana perawatan, deteksi drift & anomali batch bermasalah, penanganan insiden, serta verifikasi perbaikan.'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 6', name: 'grafik_monitoring_hari3.png',
+        purpose: 'Visualisasi grafik batang perbandingan metrik monitoring antara batch normal dan batch bermasalah.',
+        preview: 'Menampilkan lonjakan missing_rate (0% -> 5%), invalid_rate (0% -> 25%), max_mean_shift (8.54% -> 85.91%), dan high_risk_delta (3.12 pp -> 60.21 pp).'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 6', name: 'log_insiden_hari3_terisi.csv',
+        purpose: 'Catatan log insiden kualitas data (INC-H3-001) yang telah diisi, ditangani lewat karantina, dan ditutup setelah verifikasi.',
+        preview: 'incident_id: INC-H3-001 | tanggal: 2026-11-12 | batch: bermasalah | status_awal: MERAH | gejala: missing, nilai di luar rentang, kategori Weekly | status_akhir: HIJAU'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 6', name: 'laporan_monitoring_hari3.json',
+        purpose: 'Laporan lengkap hasil pemeriksaan ketiga batch (normal, bermasalah, perbaikan) dalam format JSON.',
+        preview: '[{"batch": "normal", "status": "HIJAU", "accuracy": 0.825}, {"batch": "bermasalah", "status": "MERAH", "accuracy": 0.783}, {"batch": "perbaikan", "status": "HIJAU", "accuracy": 0.812}]'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 6', name: 'laporan_monitoring_hari3.csv',
+        purpose: 'Laporan lengkap hasil pemeriksaan ketiga batch operasional dalam format tabel CSV.',
+        preview: 'batch,status,rows,valid_rows,missing_rate_pct,invalid_rate_pct,unseen_category_count,max_mean_shift_pct,high_risk_rate_pct,high_risk_delta_pp,accuracy,recall,accuracy_drop'
+      },
+      {
+        folder: 'Tugas 3/', section: 'tugas3', uk: 'UK 5', name: 'rencana_perawatan_hari3_terisi.csv',
+        purpose: 'Dokumen rencana perawatan operasional 7 area solusi AI yang telah ditinjau (status_review = DITINJAU).',
+        preview: '7 Area: Artefak, Kualitas data, Pergeseran data, Stabilitas prediksi, Kinerja model, Lingkungan, dan Insiden -> status_review = DITINJAU.'
+      }
+    ];
+
+    const T1_BERSIH_DATA = [
+      { no: 1, id: 'C0001', age: 25, contract: 'Monthly', charge: 'Rp 125.000', churn: 'No', note: 'Lolos langsung' },
+      { no: 2, id: 'C0002', age: 40, contract: 'Annual', charge: 'Rp 90.000', churn: 'No', note: 'Lolos langsung' },
+      { no: 3, id: 'C0004', age: 31, contract: 'Monthly', charge: 'Rp 110.000', churn: 'No', note: "Dinormalisasi dari 'monthly'" },
+      { no: 4, id: 'C0008', age: 29, contract: 'Annual', charge: 'Rp 105.000', churn: 'No', note: 'Lolos langsung' },
+      { no: 5, id: 'C0012', age: 27, contract: 'Annual', charge: 'Rp 88.000', churn: 'No', note: 'Lolos langsung' },
+      { no: 6, id: 'C0013', age: 33, contract: 'Monthly', charge: 'Rp 115.000', churn: 'Yes', note: 'Lolos langsung' },
+      { no: 7, id: 'C0014', age: 50, contract: 'Annual', charge: 'Rp 99.000', churn: 'No', note: 'Lolos langsung' },
+      { no: 8, id: 'C0015', age: 42, contract: 'Monthly', charge: 'Rp 123.000', churn: 'No', note: 'Baris pertama dipertahankan (keep=first)' },
+      { no: 9, id: 'C0017', age: 22, contract: 'Monthly', charge: 'Rp 80.000', churn: 'Yes', note: 'Lolos langsung' },
+      { no: 10, id: 'C0018', age: 59, contract: 'Annual', charge: 'Rp 95.000', churn: 'No', note: "Dinormalisasi dari 'annual'" }
+    ];
+
+    const T1_KARANTINA_DATA = [
+      { no: 1, id: 'C0003', age: '17', contract: 'Monthly', charge: '150000', churn: 'Yes', reason: 'Usia di luar rentang valid 18–100 tahun (17)' },
+      { no: 2, id: 'C0005', age: '52', contract: 'Annual', charge: '-50000', churn: 'Yes', reason: 'Nilai monthly_charge negatif (-50000)' },
+      { no: 3, id: 'C0006', age: '<NA>', contract: 'Monthly', charge: '135000', churn: 'No', reason: 'Nilai kosong (missing) pada kolom age' },
+      { no: 4, id: 'C0007', age: '65', contract: 'Weekly', charge: '75000', churn: 'Yes', reason: 'Kategori contract tidak valid (Weekly)' },
+      { no: 5, id: 'C0009', age: '150', contract: 'Monthly', charge: '98000', churn: 'Yes', reason: 'Usia ekstrem di luar rentang 18–100 tahun (150)' },
+      { no: 6, id: 'C0010', age: '45', contract: 'Annual', charge: 'abc', churn: 'No', reason: 'Format monthly_charge bukan numerik (abc)' },
+      { no: 7, id: 'C0011', age: '38', contract: 'Monthly', charge: '130000', churn: 'Maybe', reason: 'Kategori churn tidak valid (Maybe)' },
+      { no: 8, id: '<NA>', age: '36', contract: 'Annual', charge: '100000', churn: 'No', reason: 'Nilai kosong (missing) pada customer_id' },
+      { no: 9, id: 'C0019', age: '30', contract: 'Monthly', charge: '<NA>', churn: 'Yes', reason: 'Nilai kosong (missing) pada monthly_charge' }
+    ];
+
+    const T1_CATATAN_DATA = [
+      { no: 1, row: 3, id: 'C0003', col: 'age', val: '17', issue: 'Usia di bawah batas minimum 18 tahun', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 2, row: 4, id: 'C0004', col: 'contract', val: 'monthly', issue: 'Inkonsistensi huruf kecil pada kategori contract', action: "Dinormalisasi menjadi 'Monthly' (Data Bersih)" },
+      { no: 3, row: 5, id: 'C0005', col: 'monthly_charge', val: '-50000', issue: 'Nilai tagihan bulanan negatif (< 0)', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 4, row: 6, id: 'C0006', col: 'age', val: '<NA>', issue: 'Nilai wajib kosong (missing) pada age', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 5, row: 7, id: 'C0007', col: 'contract', val: 'Weekly', issue: 'Kategori kontrak asing di luar Monthly/Annual', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 6, row: 9, id: 'C0009', col: 'age', val: '150', issue: 'Usia melampaui batas maksimum 100 tahun', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 7, row: 10, id: 'C0010', col: 'monthly_charge', val: 'abc', issue: 'Format tagihan berisi teks non-numerik', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 8, row: 11, id: 'C0011', col: 'churn', val: 'Maybe', issue: 'Label target churn di luar Yes/No', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 9, row: 16, id: 'C0015', col: 'customer_id', val: 'C0015', issue: 'Duplikasi baris customer_id identik (muncul 2 kali)', action: "Baris duplikat ke-2 dihapus (keep='first')" },
+      { no: 10, row: 17, id: 'Baris-17(Tanpa-ID)', col: 'customer_id', val: '<NA>', issue: 'Identifier wajib customer_id kosong', action: 'Dipisahkan ke data_karantina.csv' },
+      { no: 11, row: 19, id: 'C0018', col: 'contract', val: 'annual', issue: 'Inkonsistensi huruf kecil pada kategori contract', action: "Dinormalisasi menjadi 'Annual' (Data Bersih)" },
+      { no: 12, row: 20, id: 'C0019', col: 'monthly_charge', val: '<NA>', issue: 'Nilai wajib kosong (missing) pada monthly_charge', action: 'Dipisahkan ke data_karantina.csv' }
+    ];
+
+    const T1_SCREENSHOTS = [
+      { img: 'assets/screenshots/ss_01_import_dataset.png', badge: 'Gambar 1 • UK 1', title: 'Langkah 1 & 2: Pemanggilan Pustaka pandas & Unggah CSV', desc: 'Menjalankan import pandas as pd (versi 2.2.3) dan mengunggah berkas sumber data_pelanggan_latihan.csv di Google Colab.' },
+      { img: 'assets/screenshots/ss_02_kode_python.png', badge: 'Gambar 2 • UK 1', title: 'Langkah 3 & 4: Pembacaan CSV (dtype string) & Pemeriksaan Struktur (20, 5)', desc: 'Membaca CSV dengan menjaga customer_id sebagai string serta memeriksa dimensi 20 baris × 5 kolom dan 3 nilai kosong awal.' },
+      { img: 'assets/screenshots/ss_03_pengolahan_data.png', badge: 'Gambar 3 • UK 1 & UK 2', title: 'Langkah 5 & 6: Simpan Bukti Awal & Normalisasi Format Teks/Angka', desc: 'Menyimpan 01_data_hasil_pemasukan.csv lalu menormalisasi huruf kecil C0004 & C0018 (.title()) serta mengonversi tipe numerik.' },
+      { img: 'assets/screenshots/ss_04_proses_validasi.png', badge: 'Gambar 4 • UK 2', title: 'Langkah 7: Deduplikasi C0015 & Enam Aturan Pemeriksaan Kualitas Data', desc: 'Menghapus baris duplikat kedua C0015 (keep="first") dan menerapkan 6 aturan pemeriksaan kualitas data pada 19 baris unik.' },
+      { img: 'assets/screenshots/ss_05_output_eksekusi.png', badge: 'Gambar 5 • UK 2', title: 'Langkah 8 & 9: Ringkasan Eksekusi (10 Bersih, 9 Karantina, 12 Temuan)', desc: 'Output perhitungan jumlah baris bersih (10), baris karantina (9), dan total catatan temuan validasi (12).' },
+      { img: 'assets/screenshots/ss_06_data_valid.png', badge: 'Gambar 6 • UK 2', title: 'Hasil Akhir data_pelanggan_bersih.csv (10 Baris Pelanggan Bersih)', desc: 'Tabel 10 pelanggan yang lolos seluruh aturan validasi UK 2 (termasuk C0004 & C0018 setelah normalisasi serta rekaman pertama C0015).' },
+      { img: 'assets/screenshots/ss_07_data_karantina.png', badge: 'Gambar 7 • UK 2', title: 'Hasil Akhir data_karantina.csv (9 Baris Pelanggan Dikarantina)', desc: 'Tabel 9 baris pelanggan yang dikarantina beserta kolom alasan_karantina untuk ditindaklanjuti ke pemilik data.' },
+      { img: 'assets/screenshots/ss_08_laporan_kualitas.png', badge: 'Gambar 8 • UK 2', title: 'Langkah 10 & 11: Tabel catatan_validasi.csv (12 Temuan) & Ekspor CSV', desc: 'Rincian 12 temuan hasil validasi dan penyimpanan ketiga berkas CSV keluaran wajib ke folder Tugas 1.' }
+    ];
+
+    const T2_SCREENSHOTS = [
+      { img: 'assets/screenshots/t2_ss_01_env_install.png', badge: 'Gambar 9 • UK 3 (Bagian A)', title: 'Instalasi Dependensi & Pencatatan requirements_hari2_terpasang.txt', desc: 'Menyiapkan scikit-learn, gradio, dan joblib serta menulis versi aktual pustaka ke requirements_hari2_terpasang.txt.' },
+      { img: 'assets/screenshots/t2_ss_02_dataset.png', badge: 'Gambar 10 • UK 3 (Bagian B)', title: 'Pemasukan & Audit Dataset Bersih (160 Baris × 7 Kolom)', desc: 'Memverifikasi ukuran data_pelanggan_model_hari2.csv (160, 7), 0 nilai kosong, dan distribusi churn (No=94, Yes=66).' },
+      { img: 'assets/screenshots/t2_ss_03_pipeline.png', badge: 'Gambar 11 • UK 3 (Bagian C)', title: 'Pemisahan Fitur-Target & Pembagian Train/Test 80:20 Terstratifikasi', desc: 'Memisahkan 5 fitur prediktor (tanpa customer_id) dan membagi data menjadi 128 baris latih serta 32 baris uji.' },
+      { img: 'assets/screenshots/t2_ss_04_training_eval.png', badge: 'Gambar 12 • UK 3 (Bagian C)', title: 'Perakitan Metode Pipeline & Evaluasi Akurasi Uji (0.7812)', desc: 'Menggabungkan ColumnTransformer (StandardScaler + OneHotEncoder) dan LogisticRegression dengan akurasi uji 78,12%.' },
+      { img: 'assets/screenshots/t2_ss_05_artifacts_metadata.png', badge: 'Gambar 13 • UK 3 (Bagian D)', title: 'Penyimpanan Artefak model_churn_hari2.joblib & metadata_model_hari2.json', desc: 'Menyimpan objek Pipeline terlatih ke berkas joblib dan mendokumentasikan kontrak fitur/threshold ke JSON.' },
+      { img: 'assets/screenshots/t2_ss_06_predict_fn.png', badge: 'Gambar 14 • UK 3 (Bagian E)', title: 'Integrasi Artefak Model ke Fungsi Inferensi predict_churn()', desc: 'Memuat model_churn_hari2.joblib dan membungkus 5 parameter input pelanggan ke fungsi prediksi berambang 0.50.' },
+      { img: 'assets/screenshots/t2_ss_07_smoke_tests.png', badge: 'Gambar 15 • UK 3 (Bagian E)', title: 'Pengujian Smoke Test 2 Profil Pelanggan (94.3% vs 1.8%)', desc: 'Memverifikasi fungsi predict_churn() pada profil pelanggan risiko tinggi (94,3%) dan risiko rendah (1,8%).' },
+      { img: 'assets/screenshots/t2_ss_08_gradio_launch.png', badge: 'Gambar 16 • UK 4 (Bagian F)', title: 'Konfigurasi gr.Interface & Peluncuran Aplikasi Web Gradio', desc: 'Memasang fungsi prediksi ke antarmuka web interaktif Gradio dan membangkitkan tautan publik sementara.' },
+      { img: 'assets/screenshots/t2_ss_09_gradio_testing.png', badge: 'Gambar 17 • UK 4 (Bagian F & G)', title: 'Uji Coba Antarmuka Web Gradio & Penyimpanan app_hari2.py', desc: 'Tampilan aplikasi web Demo Prediksi Churn yang berjalan aktif dan penyimpanan skrip mandiri app_hari2.py.' }
+    ];
+
+    const T3_SCREENSHOTS = [
+      { img: 'assets/screenshots/t3_ss_01_env_model.png', badge: 'Gambar 18 • UK 5 (Bagian A & C)', title: 'Pemeriksaan Lingkungan & Verifikasi Kompatibilitas Model Hari 2', desc: 'Memastikan kecocokan versi scikit-learn runtime dengan metadata_model_hari2.json dan memuat model_churn_hari2.joblib.' },
+      { img: 'assets/screenshots/t3_ss_02_inventory_baseline.png', badge: 'Gambar 19 • UK 5 (Bagian B & E)', title: 'Inventarisasi 8 Berkas Wajib & Perhitungan Metrik Baseline', desc: 'Memverifikasi kelengkapan 8 berkas input dan menghitung baseline_high_risk_rate (38,12%) serta baseline_accuracy (0,8438).' },
+      { img: 'assets/screenshots/t3_ss_03_maintenance_plan.png', badge: 'Gambar 20 • UK 5 (Bagian D)', title: 'Penyusunan & Peninjauan rencana_perawatan_hari3_terisi.csv', desc: 'Meninjau 7 area perawatan solusi AI dan memperbarui kolom status_review menjadi DITINJAU.' },
+      { img: 'assets/screenshots/t3_ss_04_thresholds_functions.png', badge: 'Gambar 21 • UK 5 & UK 6 (Bagian F & G)', title: 'Kontrak Ambang Monitoring (THRESHOLDS) & Fungsi check_batch()', desc: 'Menetapkan batas toleransi kualitas data/drift dan membangun fungsi evaluasi otomatis check_batch().' },
+      { img: 'assets/screenshots/t3_ss_05_batch_normal.png', badge: 'Gambar 22 • UK 6 (Bagian H)', title: 'Hasil Pemeriksaan Batch Normal — Status HIJAU', desc: 'Seluruh 80 baris valid (missing 0%, invalid 0%, kategori asing 0, mean shift 8,54%, akurasi 0,825).' },
+      { img: 'assets/screenshots/t3_ss_06_batch_problem.png', badge: 'Gambar 23 • UK 6 (Bagian I)', title: 'Deteksi Batch Bermasalah — Status MERAH', desc: 'Mendeteksi pelanggaran berat: missing 5,0%, invalid 25,0%, 6 kategori asing Weekly, dan mean shift 85,91%.' },
+      { img: 'assets/screenshots/grafik_monitoring_hari3.png', badge: 'Gambar 24 • UK 6 (Bagian J)', title: 'Visualisasi grafik_monitoring_hari3.png', desc: 'Grafik perbandingan metrik kualitas data dan pergeseran distribusi antara batch normal dan batch bermasalah.' },
+      { img: 'assets/screenshots/t3_ss_07_incident_log.png', badge: 'Gambar 25 • UK 6 (Bagian K)', title: 'Pencatatan Log Insiden INC-H3-001 (log_insiden_hari3_terisi.csv)', desc: 'Mencatat gejala, dampak, tindakan karantina sementara, dan akar masalah perubahan kontrak data sumber.' },
+      { img: 'assets/screenshots/t3_ss_08_batch_fixed.png', badge: 'Gambar 26 • UK 6 (Bagian L & M)', title: 'Verifikasi Batch Perbaikan (HIJAU) & Penutupan Insiden', desc: 'Batch perbaikan kembali berstatus HIJAU (80/80 baris valid, akurasi 0,812) sehingga insiden INC-H3-001 ditutup.' }
+    ];
+
+    const BATCH_REPORTS = {
+      normal: {
+        name: 'Batch Normal (data_pelanggan_batch_normal_hari3.csv)',
+        status: 'HIJAU',
+        badgeClass: 'bg-emerald-600 text-white',
+        borderClass: 'border-emerald-500 bg-emerald-50/70',
+        rows: '80 / 80 baris valid (100%)',
+        missing: '0.0% (Ambang <= 2.0%) — LULUS',
+        invalid: '0.0% (Ambang <= 1.0%) — LULUS',
+        unseen: '0 kategori asing (Ambang == 0) — LULUS',
+        shift: '8.54% (Ambang <= 20.0%) — LULUS',
+        risk: '41.25% (Delta +3.12 pp <= 15.0 pp) — LULUS',
+        acc: '0.825 | Recall: 0.828 (Drop 0.019 <= 0.10) — LULUS',
+        action: 'Operasional normal dilanjutkan; simpan bukti pemeriksaan rutin.'
+      },
+      bermasalah: {
+        name: 'Batch Bermasalah (data_pelanggan_batch_bermasalah_hari3.csv)',
+        status: 'MERAH',
+        badgeClass: 'bg-red-600 text-white',
+        borderClass: 'border-red-500 bg-red-50/80',
+        rows: '60 / 80 baris valid (20 baris cacat!)',
+        missing: '5.0% (Melanggar ambang <= 2.0%) — GAGAL',
+        invalid: '25.0% (Melanggar ambang <= 1.0%) — GAGAL',
+        unseen: "6 baris kategori asing 'Weekly' (Ambang == 0) — GAGAL",
+        shift: '85.91% (Melanggar ambang <= 20.0%) — GAGAL',
+        risk: '98.33% (Delta +60.21 pp > 15.0 pp) — GAGAL',
+        acc: '0.783 | Recall: 1.000 (Drop 0.060)',
+        action: 'KARANTINA BATCH! Jangan pakai hasil prediksi, jangan retrain model pada data rusak, catat insiden INC-H3-001, dan minta perbaikan ke Data Owner.'
+      },
+      perbaikan: {
+        name: 'Batch Perbaikan (data_pelanggan_batch_perbaikan_hari3.csv)',
+        status: 'HIJAU',
+        badgeClass: 'bg-emerald-600 text-white',
+        borderClass: 'border-emerald-500 bg-emerald-50/70',
+        rows: '80 / 80 baris valid (100% pulih)',
+        missing: '0.0% (Ambang <= 2.0%) — LULUS',
+        invalid: '0.0% (Ambang <= 1.0%) — LULUS',
+        unseen: '0 kategori asing (Ambang == 0) — LULUS',
+        shift: '9.52% (Ambang <= 20.0%) — LULUS',
+        risk: '46.25% (Delta +8.13 pp <= 15.0 pp) — LULUS',
+        acc: '0.812 | Recall: 0.824 (Drop 0.031 <= 0.10) — LULUS',
+        action: 'Verifikasi berhasil! Perbarui status_akhir insiden INC-H3-001 menjadi HIJAU dan simpan laporan monitoring akhir.'
+      }
+    };
+
+    const T3_PLAN_DATA = [
+      { area: 'Artefak', check: 'Model, metadata, dan requirements', method: 'Cek nama, versi, dan sumber', thresh: 'Semua tersedia', owner: 'ML Owner', status: 'DITINJAU' },
+      { area: 'Kualitas data', check: 'Missing, rentang nilai, kategori', method: 'Validasi batch', thresh: 'Missing <=2%; invalid <=1%; kategori asing=0', owner: 'Data Owner', status: 'DITINJAU' },
+      { area: 'Pergeseran data', check: 'Rata-rata fitur dan distribusi', method: 'Bandingkan baseline', thresh: 'Mean shift <=20%', owner: 'ML Owner', status: 'DITINJAU' },
+      { area: 'Stabilitas prediksi', check: 'Proporsi risiko tinggi', method: 'Bandingkan baseline', thresh: 'Perubahan <=15 percentage point', owner: 'ML Owner', status: 'DITINJAU' },
+      { area: 'Kinerja model', check: 'Accuracy dan recall saat label tersedia', method: 'Bandingkan baseline', thresh: 'Penurunan accuracy <=0.10', owner: 'ML Owner + Business Owner', status: 'DITINJAU' },
+      { area: 'Lingkungan', check: 'Versi Python dan library', method: 'Cocokkan metadata', thresh: 'Versi scikit-learn sama', owner: 'Platform Owner', status: 'DITINJAU' },
+      { area: 'Insiden', check: 'Status, dampak, tindakan, & verifikasi', method: 'Log insiden', thresh: 'Semua insiden punya owner dan bukti', owner: 'Incident Owner', status: 'DITINJAU' }
+    ];
+
+    const CODE_CARDS = [
+      {
+        task: 'Tugas 1', uk: 'UK 1 • Langkah 1–3', title: 'Impor Pustaka & Pembacaan CSV dengan Proteksi Tipe ID',
+        code: "import pandas as pd\ndf_raw = pd.read_csv('data_pelanggan_latihan.csv', dtype={'customer_id': 'string'})\ndf = df_raw.copy()\nprint('Shape:', df.shape)",
+        explain: "Mengimpor pandas dan membaca CSV sumber dengan mengunci customer_id sebagai string agar identifier pelanggan ('C0001' dst.) tidak berubah format. Salinan df = df_raw.copy() menjaga data mentah tetap utuh.",
+        tip: "Jika asesor bertanya mengapa memakai dtype={'customer_id': 'string'}, jawab: karena kode pelanggan adalah pengenal (identifier), bukan angka yang dihitung, sehingga nol di depan tidak boleh hilang."
+      },
+      {
+        task: 'Tugas 1', uk: 'UK 1 • Langkah 4–5', title: 'Audit Struktur Kolom, Tipe Data, & Bukti Pemasukan Awal',
+        code: "print('Nama kolom:', df.columns.tolist())\nprint(df.dtypes)\nprint(df.isna().sum())\ndf.to_csv('01_data_hasil_pemasukan.csv', index=False)",
+        explain: "Memeriksa daftar 5 kolom wajib, tipe data tiap kolom (mendeteksi monthly_charge masih bertipe object karena ada teks 'abc' pada C0010), menghitung 3 NaN awal, dan menyimpan bukti UK 1.",
+        tip: "Tunjukkan bahwa pemeriksaan dtypes di UK 1 langsung mengungkap anomali tipe data sebelum masuk ke tahap pembersihan UK 2."
+      },
+      {
+        task: 'Tugas 1', uk: 'UK 2 • Langkah 6', title: 'Normalisasi Huruf Kecil (.title()) & Konversi Numerik (coerce)',
+        code: "df_work['contract_norm'] = df_work['contract'].astype('string').str.strip().str.title()\ndf_work['churn_norm'] = df_work['churn'].astype('string').str.strip().str.title()\ndf_work['age_num'] = pd.to_numeric(df_work['age'], errors='coerce')\ndf_work['charge_num'] = pd.to_numeric(df_work['monthly_charge'], errors='coerce')",
+        explain: "Menormalisasi penulisan huruf kecil 'monthly' (C0004) -> 'Monthly' dan 'annual' (C0018) -> 'Annual' sehingga keduanya menjadi bersih. Parameter errors='coerce' mengubah teks tidak valid 'abc' (C0010) menjadi NaN.",
+        tip: "Ini kunci mengapa diperoleh tepat 10 baris bersih: C0004 dan C0018 berhasil diselamatkan melalui normalisasi format teks."
+      },
+      {
+        task: 'Tugas 1', uk: 'UK 2 • Langkah 7–11', title: 'Deduplikasi C0015 & Pemisahan 10 Bersih, 9 Karantina, 12 Temuan',
+        code: "dup_mask_second = df_work['customer_id'].notna() & df_work['customer_id'].duplicated(keep='first')\ndf_dedup = df_work.loc[~dup_mask_second].copy()\n# Simpan 3 berkas CSV keluaran wajib UK 2\ndf_bersih.to_csv('data_pelanggan_bersih.csv', index=False)\ndf_karantina.to_csv('data_karantina.csv', index=False)\ndf_catatan.to_csv('catatan_validasi.csv', index=False)",
+        explain: "Menghapus baris duplikat kedua C0015 (baris 16) dengan keep='first' sehingga rekaman pertama C0015 tetap bersih. Dari 19 baris unik, 10 baris lolos ke data_pelanggan_bersih.csv dan 9 baris masuk ke data_karantina.csv.",
+        tip: "Hafalkan komposisi 12 temuan: 2 normalisasi huruf kecil + 1 duplikat dihapus + 9 baris karantina = 12 temuan pada catatan_validasi.csv."
+      },
+      {
+        task: 'Tugas 2', uk: 'UK 3 • Bagian A & B', title: 'Pencatatan Dependensi & Validasi Skema Dataset 160 Baris',
+        code: "Path('requirements_hari2_terpasang.txt').write_text('\\n'.join(req_lines) + '\\n')\ndf = pd.read_csv('data_pelanggan_model_hari2.csv')\nassert df.columns.tolist() == expected_columns\nassert df.shape == (160, 7)",
+        explain: "Mencatat versi aktual pandas, scikit-learn, joblib, dan gradio secara otomatis ke requirements_hari2_terpasang.txt serta mengunci ukuran dataset (160, 7) menggunakan assert.",
+        tip: "Pencatatan versi otomatis mencegah human error dan menjadi acuan pemeriksaan kompatibilitas model pada Tugas 3."
+      },
+      {
+        task: 'Tugas 2', uk: 'UK 3 • Bagian C', title: 'Stratified Train-Test Split (128 Latih : 32 Uji)',
+        code: "FEATURES = ['age', 'contract', 'monthly_charge', 'tenure_months', 'support_calls']\nX = df[FEATURES].copy()\ny = df['churn'].map({'No': 0, 'Yes': 1})\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.20, random_state=42, stratify=y\n)",
+        explain: "Membuang customer_id dari fitur prediksi, memetakan target churn ke biner (0/1), dan membagi data 80:20 dengan stratify=y agar proporsi kelas churn di data latih dan uji sama persis.",
+        tip: "Jelaskan bahwa random_state=42 menjamin pembagian data selalu reprodusibel (hasil akurasi 0.7812 tidak berubah-ubah)."
+      },
+      {
+        task: 'Tugas 2', uk: 'UK 3 • Bagian C', title: 'Arsitektur Metode Pipeline (ColumnTransformer + LogisticRegression)',
+        code: "preprocessor = ColumnTransformer(transformers=[\n    ('num', StandardScaler(), numeric_features),\n    ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features),\n])\nmodel_pipeline = Pipeline(steps=[\n    ('preprocessor', preprocessor),\n    ('classifier', LogisticRegression(max_iter=1000, random_state=42)),\n])\nmodel_pipeline.fit(X_train, y_train)",
+        explain: "Menyatukan StandardScaler (untuk 4 fitur angka), OneHotEncoder (untuk contract), dan LogisticRegression ke dalam satu objek Pipeline yang mencapai akurasi uji 0.7812 (78,12%).",
+        tip: "handle_unknown='ignore' menjaga agar model tidak crash jika di produksi muncul kategori kontrak baru yang belum dikenal."
+      },
+      {
+        task: 'Tugas 2', uk: 'UK 3 & UK 4 • Bagian D–G', title: 'Serialisasi Artefak, Fungsi predict_churn(), & Aplikasi Gradio',
+        code: "joblib.dump(model_pipeline, 'model_churn_hari2.joblib')\nmodel = joblib.load('model_churn_hari2.joblib')\ndef predict_churn(age, contract, monthly_charge, tenure_months, support_calls):\n    probability = float(model.predict_proba(row)[0, 1])\n    label = 'RISIKO TINGGI' if probability >= 0.50 else 'RISIKO RENDAH'\n    return f'{label} | peluang churn: {probability:.1%}'\ndemo = gr.Interface(fn=predict_churn, inputs=[...], outputs=gr.Textbox())",
+        explain: "Menyimpan model ke joblib, menghubungkannya ke fungsi inferensi predict_churn() dengan ambang 0.50, mengujinya lewat smoke test, lalu memasangnya ke antarmuka web Gradio dan app_hari2.py.",
+        tip: "Pada tahap pemasangan (UK 4), aplikasi memuat model jadi dengan joblib.load() tanpa melatih ulang model dari awal."
+      },
+      {
+        task: 'Tugas 3', uk: 'UK 5 • Bagian A–D', title: 'Inventaris 8 Artefak, Kompatibilitas Model, & Rencana Perawatan',
+        code: "missing_files = [f for f in required_files if not Path(f).exists()]\nassert not missing_files\nassert metadata['scikit_learn_version'] == sklearn.__version__\nmaintenance_plan = pd.read_csv('template_rencana_perawatan_hari3.csv')\nmaintenance_plan['status_review'] = 'DITINJAU'\nmaintenance_plan.to_csv('rencana_perawatan_hari3_terisi.csv', index=False)",
+        explain: "Memastikan 8 berkas wajib tersedia, memeriksa kecocokan versi scikit-learn dengan metadata JSON, dan mengesahkan 7 area rencana perawatan dengan status DITINJAU.",
+        tip: "Tujuh area perawatan meliputi: Artefak, Kualitas data, Pergeseran data, Stabilitas prediksi, Kinerja model, Lingkungan, dan Insiden."
+      },
+      {
+        task: 'Tugas 3', uk: 'UK 5 & UK 6 • Bagian E–G', title: 'Kontrak Ambang Monitoring (THRESHOLDS) & Fungsi check_batch()',
+        code: "THRESHOLDS = {\n    'max_missing_rate_pct': 2.0, 'max_invalid_rate_pct': 1.0,\n    'max_unseen_category_count': 0, 'max_numeric_mean_shift_pct': 20.0,\n    'max_high_risk_delta_pp': 15.0, 'max_accuracy_drop': 0.10\n}\ndef check_batch(df, batch_name): ...",
+        explain: "Menetapkan ambang batas numerik terukur dan mengevaluasi setiap batch baru untuk menentukan status kesehatan solusi AI: HIJAU (aman), KUNING (peringatan drift), atau MERAH (kritis).",
+        tip: "Status MERAH dipicu jika missing > 2%, invalid > 1%, kategori asing > 0, atau penurunan akurasi > 0.10."
+      },
+      {
+        task: 'Tugas 3', uk: 'UK 6 • Bagian H–J', title: 'Deteksi Batch Bermasalah (MERAH) & Visualisasi Grafik Monitoring',
+        code: "report_normal = check_batch(batch_normal, 'normal')      # HIJAU\nreport_problem = check_batch(batch_problem, 'bermasalah') # MERAH\nax = reports.set_index('batch')[plot_columns].plot(kind='bar', figsize=(8, 4))\nplt.savefig('grafik_monitoring_hari3.png', dpi=150)",
+        explain: "Mendeteksi kegagalan pada batch bermasalah (missing 5%, invalid 25%, kategori Weekly=6, mean shift 85,91%, lonjakan risiko tinggi +60,21 pp) dan menyimpannya ke grafik_monitoring_hari3.png.",
+        tip: "Lonjakan prediksi risiko tinggi hingga 98,33% pada batch bermasalah disebabkan oleh kerusakan data input, bukan perubahan perilaku pelanggan."
+      },
+      {
+        task: 'Tugas 3', uk: 'UK 6 • Bagian K–M', title: 'Karantina Insiden INC-H3-001 & Verifikasi Batch Perbaikan (HIJAU)',
+        code: "incident_log.loc[0, 'status_awal'] = 'MERAH'\n# Setelah pipa data diperbaiki oleh Data Owner:\nreport_fixed = check_batch(batch_fixed, 'perbaikan') # HIJAU\nincident_log.loc[0, 'status_akhir'] = report_fixed['status']\nincident_log.to_csv('log_insiden_hari3_terisi.csv', index=False)",
+        explain: "Mencatat insiden INC-H3-001, mengarantina batch bermasalah tanpa melatih ulang model secara gegabah, lalu memverifikasi batch perbaikan hingga kembali HIJAU sebelum menutup insiden.",
+        tip: "Prinsip emas MLOps di UK 6: Insiden baru boleh ditutup (status_akhir = HIJAU) setelah batch perbaikan diverifikasi lulus seluruh ambang batas."
+      }
+    ];
+
+    const QUIZ_QUESTIONS = [
+      {
+        id: 1, task: 'Tugas 1', uk: 'UK 1',
+        q: 'Mengapa pada saat membaca dataset data_pelanggan_latihan.csv di UK 1 digunakan parameter dtype={"customer_id": "string"}?',
+        options: [
+          'Agar kolom customer_id dapat dijumlahkan secara matematis dengan kolom age',
+          'Agar format kode pengenal pelanggan (seperti C0001) tetap terjaga sebagai teks dan tidak kehilangan karakter nol',
+          'Untuk menghapus baris yang memiliki nilai kosong secara otomatis saat pembacaan CSV',
+          'Agar ukuran file CSV menjadi lebih kecil saat disimpan ke Google Drive'
+        ],
+        answer: 1,
+        explain: 'Kolom customer_id merupakan atribut pengenal unik (identifier), bukan nilai numerik untuk operasi hitung. Menguncinya sebagai string menjaga konsistensi format teks.'
+      },
+      {
+        id: 2, task: 'Tugas 1', uk: 'UK 1',
+        q: 'Berapakah dimensi awal (jumlah baris dan kolom) serta jumlah nilai kosong (missing values) awal saat data_pelanggan_latihan.csv pertama kali diperiksa pada UK 1?',
+        options: [
+          '20 baris dan 5 kolom, dengan 3 nilai kosong awal (customer_id=1, age=1, monthly_charge=1)',
+          '160 baris dan 7 kolom, dengan 0 nilai kosong awal',
+          '19 baris dan 5 kolom, dengan 12 nilai kosong awal',
+          '80 baris dan 7 kolom, dengan 4 nilai kosong awal'
+        ],
+        answer: 0,
+        explain: 'Dataset data_pelanggan_latihan.csv memiliki ukuran (20, 5) dan pada pemeriksaan df.isna().sum() awal terdeteksi 3 nilai kosong (baris 17 tanpa ID, C0006 tanpa age, dan C0019 tanpa monthly_charge).'
+      },
+      {
+        id: 3, task: 'Tugas 1', uk: 'UK 1',
+        q: 'Mengapa kolom monthly_charge terbaca memiliki tipe data object (teks) sebelum dilakukan konversi pada UK 2?',
+        options: [
+          'Karena seluruh angka tagihan ditulis menggunakan mata uang Dolar',
+          'Karena pada baris pelanggan C0010 terdapat nilai teks non-numerik yaitu "abc"',
+          'Karena pandas tidak mendukung tipe data float64 maupun int64',
+          'Karena nama kolom monthly_charge mengandung garis bawah (underscore)'
+        ],
+        answer: 1,
+        explain: 'Adanya satu nilai string "abc" pada rekaman C0010 menyebabkan pandas menganggap seluruh kolom monthly_charge bertipe object saat pembacaan awal.'
+      },
+      {
+        id: 4, task: 'Tugas 1', uk: 'UK 2',
+        q: 'Apa fungsi dari parameter errors="coerce" pada perintah pd.to_numeric(df["monthly_charge"], errors="coerce") di UK 2?',
+        options: [
+          'Menghentikan eksekusi program dengan pesan ValueError jika ada teks',
+          'Mengubah nilai yang tidak dapat dikonversi menjadi angka (seperti "abc" pada C0010) menjadi NaN agar terdeteksi sebagai data tidak valid',
+          'Mengganti nilai teks "abc" menjadi angka 0 secara diam-diam',
+          'Menghapus kolom monthly_charge dari DataFrame'
+        ],
+        answer: 1,
+        explain: 'Dengan errors="coerce", nilai non-numerik seperti "abc" diubah menjadi NaN (missing/invalid) sehingga baris C0010 terjaring oleh aturan validasi dan dipisahkan ke data karantina.'
+      },
+      {
+        id: 5, task: 'Tugas 1', uk: 'UK 2',
+        q: 'Bagaimana perlakuan yang tepat terhadap pelanggan C0004 (contract="monthly") dan C0018 (contract="annual") pada tahap validasi UK 2?',
+        options: [
+          'Keduanya langsung dibuang ke data_karantina.csv karena huruf kecil',
+          'Dicatat sebagai 2 temuan inkonsistensi format di catatan_validasi.csv, lalu dinormalisasi dengan .str.title() menjadi "Monthly" dan "Annual" sehingga masuk ke data_pelanggan_bersih.csv',
+          'Diubah nilainya menjadi "Weekly" agar seragam dengan C0007',
+          'Dihapus permanen dari memori tanpa dicatat di laporan mana pun'
+        ],
+        answer: 1,
+        explain: 'Perbedaan kapitalisasi huruf ("monthly" dan "annual") diselesaikan melalui normalisasi teks (.str.strip().str.title()) sehingga C0004 dan C0018 menjadi bersih, sembari tetap dicatat pada catatan_validasi.csv.'
+      },
+      {
+        id: 6, task: 'Tugas 1', uk: 'UK 2',
+        q: 'Mengapa hasil akhir UK 2 pada Instruksi Tugas 1 menghasilkan 10 baris di data_pelanggan_bersih.csv dan 9 baris di data_karantina.csv (total 19 baris dari 20 baris awal)?',
+        options: [
+          'Karena 1 baris terakhir sengaja tidak dibaca oleh pd.read_csv()',
+          'Karena pelanggan C0015 muncul identik 2 kali (baris 15 dan 16); baris pertama disimpan sebagai data bersih sedangkan baris duplikat kedua dihapus (keep="first")',
+          'Karena kedua baris C0015 dimasukkan ke data_karantina.csv sekaligus ke data_pelanggan_bersih.csv',
+          'Karena baris header dihitung sebagai baris data ke-20'
+        ],
+        answer: 1,
+        explain: 'Deduplikasi dengan duplicated(keep="first") mempertahankan rekaman pertama C0015 di dalam 10 baris bersih dan menghapus salinan duplikat keduanya (baris 16), sehingga 10 bersih + 9 karantina + 1 duplikat dihapus = 20 baris awal.'
+      },
+      {
+        id: 7, task: 'Tugas 1', uk: 'UK 2',
+        q: 'Manakah rincian yang tepat mengenai 12 temuan yang terdokumentasi di dalam berkas catatan_validasi.csv pada Tugas 1?',
+        options: [
+          '12 baris kosong pada kolom churn',
+          '2 temuan normalisasi huruf kecil (C0004 & C0018) + 1 temuan duplikasi ID (C0015 baris 16) + 9 temuan baris yang dikarantina = 12 temuan',
+          '6 temuan pada data latih dan 6 temuan pada data uji',
+          '10 baris bersih ditambah 2 baris duplikat'
+        ],
+        answer: 1,
+        explain: 'Ketiga belas proses pemeriksaan merangkum tepat 12 catatan temuan: 2 perbaikan format kapitalisasi, 1 penghapusan baris duplikat kedua C0015, dan 9 baris cacat yang masuk ke data_karantina.csv.'
+      },
+      {
+        id: 8, task: 'Tugas 2', uk: 'UK 3',
+        q: 'Mengapa kolom customer_id TIDAK dimasukkan ke dalam daftar FEATURES saat melatih model prediksi churn pada Tugas 2 (UK 3)?',
+        options: [
+          'Karena customer_id memiliki terlalu banyak nilai kosong pada dataset Hari 2',
+          'Karena customer_id hanyalah pengenal unik pelanggan yang tidak memiliki hubungan kausal/pola perilaku terhadap churn dan dapat menyebabkan overfitting',
+          'Karena LogisticRegression hanya menerima maksimal 3 kolom fitur',
+          'Karena customer_id merupakan variabel target yang ingin diprediksi'
+        ],
+        answer: 1,
+        explain: 'Menyertakan ID unik sebagai fitur prediktor akan membuat model menghafal ID spesifik (overfitting) alih-alih mempelajari pola umur, kontrak, tagihan, lama langganan, dan panggilan dukungan.'
+      },
+      {
+        id: 9, task: 'Tugas 2', uk: 'UK 3',
+        q: 'Apa tujuan penggunaan parameter stratify=y pada fungsi train_test_split(X, y, test_size=0.20, random_state=42, stratify=y)?',
+        options: [
+          'Mengurutkan data berdasarkan umur pelanggan dari termuda ke tertua',
+          'Menjaga agar proporsi kelas target churn (No vs Yes) pada data latih (128 baris) dan data uji (32 baris) tetap seimbang sesuai distribusi asli',
+          'Mengubah ukuran data uji menjadi 50% dari total data',
+          'Menghapus seluruh baris yang memiliki label churn = Yes'
+        ],
+        answer: 1,
+        explain: 'Stratifikasi (stratify=y) menjamin rasio kelas target (No=58,75% dan Yes=41,25%) terdistribusi secara proporsional baik di X_train (128 baris) maupun di X_test (32 baris).'
+      },
+      {
+        id: 10, task: 'Tugas 2', uk: 'UK 3',
+        q: 'Komponen prapemrosesan apa saja yang digabungkan di dalam ColumnTransformer pada Pipeline Tugas 2?',
+        options: [
+          'MinMaxScaler untuk kolom teks dan LabelEncoder untuk kolom angka',
+          'StandardScaler untuk 4 fitur numerik (age, monthly_charge, tenure_months, support_calls) dan OneHotEncoder(handle_unknown="ignore") untuk fitur kategorikal (contract)',
+          'PCA dan K-Means Clustering untuk seluruh 7 kolom',
+          'SimpleImputer tanpa encoder apa pun'
+        ],
+        answer: 1,
+        explain: 'Fitur numerik distandarisasi skalanya dengan StandardScaler, sedangkan fitur kategorikal contract diubah menjadi vektor biner menggunakan OneHotEncoder(handle_unknown="ignore").'
+      },
+      {
+        id: 11, task: 'Tugas 2', uk: 'UK 3',
+        q: 'Apa keuntungan utama membungkus ColumnTransformer dan LogisticRegression ke dalam satu objek sklearn.pipeline.Pipeline?',
+        options: [
+          'Mencegah kebocoran data (data leakage) saat pelatihan dan menjamin data input saat inferensi/prediksi selalu melewati urutan transformasi yang persis sama',
+          'Membuat ukuran file CSV menjadi sepuluh kali lebih besar',
+          'Menghilangkan kebutuhan untuk membagi data latih dan data uji',
+          'Mengubah algoritma LogisticRegression menjadi jaringan saraf tiruan secara otomatis'
+        ],
+        answer: 0,
+        explain: 'Dengan Pipeline, parameter StandardScaler dan OneHotEncoder dihitung hanya dari X_train, dan saat model_churn_hari2.joblib dipanggil di Gradio, input mentah otomatis ditransformasi dengan aturan yang sama.'
+      },
+      {
+        id: 12, task: 'Tugas 2', uk: 'UK 3',
+        q: 'Berapakah nilai akurasi data uji (test_accuracy) dan ambang batas probabilitas (threshold) yang tercatat di dalam metadata_model_hari2.json?',
+        options: [
+          'test_accuracy = 0.9500 dan threshold = 0.80',
+          'test_accuracy = 0.7812 (78,12%) dari 32 baris uji dan threshold = 0.50',
+          'test_accuracy = 0.5000 dan threshold = 0.25',
+          'test_accuracy = 1.0000 dan threshold = 0.10'
+        ],
+        answer: 1,
+        explain: 'Dari 32 baris data uji pada Tugas 2, model memprediksi 25 baris dengan tepat sehingga menghasilkan test_accuracy = 25/32 = 0.78125 (dibulatkan 0.7812) dengan threshold klasifikasi 0.50.'
+      },
+      {
+        id: 13, task: 'Tugas 2', uk: 'UK 3 & UK 4',
+        q: 'Bagaimana hasil pengujian smoke test fungsi predict_churn() pada Kasus 1 (28, "Monthly", 185000, 3, 5) dan Kasus 2 (45, "Annual", 95000, 36, 1)?',
+        options: [
+          'Kasus 1: RISIKO RENDAH (1.8%) dan Kasus 2: RISIKO TINGGI (94.3%)',
+          'Kasus 1: RISIKO TINGGI | peluang churn: 94.3% dan Kasus 2: RISIKO RENDAH | peluang churn: 1.8%',
+          'Kedua kasus menghasilkan RISIKO TINGGI | peluang churn: 50.0%',
+          'Kedua kasus menghasilkan error karena kontrak tidak dikenali'
+        ],
+        answer: 1,
+        explain: 'Pelanggan muda kontrak bulanan dengan tagihan tinggi, tenur baru 3 bulan, dan 5 panggilan dukungan memiliki peluang churn 94,3% (RISIKO TINGGI), sedangkan pelanggan kontrak tahunan tenur 36 bulan dengan 1 panggilan hanya 1,8% (RISIKO RENDAH).'
+      },
+      {
+        id: 14, task: 'Tugas 2', uk: 'UK 4',
+        q: 'Berkas apa saja yang wajib tersimpan di dalam folder Tugas 2/ sesuai Instruksi Tugas 2?',
+        options: [
+          'Hanya Tugas2.ipynb dan data_pelanggan_model_hari2.csv',
+          'Enam berkas: Tugas2.ipynb, Tugas2_Presentasi_Script.pdf, requirements_hari2_terpasang.txt, app_hari2.py, metadata_model_hari2.json, dan model_churn_hari2.joblib',
+          'Tiga berkas Excel (.xlsx) dan satu berkas Word (.docx)',
+          'Hanya berkas model_churn_hari2.joblib tanpa notebook'
+        ],
+        answer: 1,
+        explain: 'Sesuai pohon folder resmi di Instruksi tugas.pdf halaman 1 dan 3, folder Tugas 2 wajib memuat 1 script Tugas2.ipynb, 1 PDF presentasi, dan 4 berkas output (requirements, app_hari2.py, metadata JSON, dan model joblib).'
+      },
+      {
+        id: 15, task: 'Tugas 3', uk: 'UK 5',
+        q: 'Mengapa pada Tugas 3 (UK 5) kita wajib memeriksa kesesuaian versi scikit-learn antara runtime Google Colab dan metadata_model_hari2.json sebelum memuat model_churn_hari2.joblib?',
+        options: [
+          'Agar warna grafik matplotlib berubah menjadi hijau',
+          'Karena perbedaan versi scikit-learn saat serialisasi dan deserialisasi joblib dapat memicu kegagalan pemuatan modul internal (seperti ImportError) atau ketidakkonsistenan hasil inferensi',
+          'Karena joblib hanya bisa membaca file berukuran di atas 100 MB',
+          'Untuk menghapus seluruh fitur numerik dari model'
+        ],
+        answer: 1,
+        explain: 'Format serialisasi biner joblib mengikat struktur modul internal scikit-learn; memverifikasi kesesuaian versi memastikan Pipeline dapat dimuat dengan aman dan konsisten.'
+      },
+      {
+        id: 16, task: 'Tugas 3', uk: 'UK 5',
+        q: 'Apa nilai status yang diisikan pada kolom status_review untuk ketujuh area perawatan di dalam berkas rencana_perawatan_hari3_terisi.csv?',
+        options: [
+          'BELUM_DIBACA',
+          'DITINJAU',
+          'DIHAPUS',
+          'MERAH'
+        ],
+        answer: 1,
+        explain: 'Pada Bagian D Tugas 3 (UK 5), ketujuh area rencana perawatan (Artefak, Kualitas data, Pergeseran data, Stabilitas prediksi, Kinerja model, Lingkungan, Insiden) ditinjau dan diberi status_review = "DITINJAU".'
+      },
+      {
+        id: 17, task: 'Tugas 3', uk: 'UK 5 & UK 6',
+        q: 'Berapakah ambang batas maksimum (THRESHOLDS) yang ditetapkan untuk missing_rate_pct, invalid_rate_pct, dan unseen_category_count pada monitoring Tugas 3?',
+        options: [
+          'missing <= 20.0%, invalid <= 15.0%, unseen_category <= 10',
+          'missing <= 2.0%, invalid <= 1.0%, dan unseen_category_count == 0',
+          'missing <= 50.0%, invalid <= 50.0%, dan unseen_category_count <= 5',
+          'Tidak ada ambang batas yang ditetapkan'
+        ],
+        answer: 1,
+        explain: 'Kontrak kualitas data menetapkan batas ketat: missing_rate_pct <= 2.0%, invalid_rate_pct <= 1.0%, dan unseen_category_count == 0 (tidak boleh ada kategori kontrak di luar Monthly dan Annual).'
+      },
+      {
+        id: 18, task: 'Tugas 3', uk: 'UK 6',
+        q: 'Mengapa hasil pemeriksaan check_batch() pada data_pelanggan_batch_bermasalah_hari3.csv menghasilkan status MERAH?',
+        options: [
+          'Karena jumlah barisnya hanya 10 baris',
+          'Karena terjadi pelanggaran kontrak kualitas & drift secara bersamaan: missing 5.0% (>2%), invalid 25.0% (>1%), muncul 6 baris kategori asing "Weekly", max mean shift 85.91% (>20%), dan lonjakan risiko tinggi +60.21 pp (>15 pp)',
+          'Karena akurasi model naik menjadi 100%',
+          'Karena file CSV tidak memiliki header kolom'
+        ],
+        answer: 1,
+        explain: 'Batch bermasalah melanggar seluruh ambang batas utama sehingga hanya 60 dari 80 baris yang valid dan proporsi prediksi risiko tinggi terdistorsi hingga 98,33%.'
+      },
+      {
+        id: 19, task: 'Tugas 3', uk: 'UK 6',
+        q: 'Apa tindakan operasional MLOps yang paling tepat saat sistem monitoring mendeteksi batch bermasalah berstatus MERAH akibat kerusakan data sumber?',
+        options: [
+          'Langsung melatih ulang (retrain) model pada batch bermasalah tersebut agar model terbiasa dengan data rusak',
+          'Mengubah nilai data yang rusak secara diam-diam supaya laporan terlihat HIJAU',
+          'Mengarantina batch bermasalah agar prediksinya tidak dipakai bisnis, tetap menggunakan artefak model terakhir yang tervalidasi, mencatat log insiden (INC-H3-001), dan meminta perbaikan sumber data ke Data Owner',
+          'Menghapus model_churn_hari2.joblib dari server produksi'
+        ],
+        answer: 2,
+        explain: 'Melatih ulang model pada data yang rusak akan merusak model (garbage in, garbage out). Prosedur yang benar adalah karantina batch, eskalasi insiden ke Data Owner, dan verifikasi ulang saat batch perbaikan tiba.'
+      },
+      {
+        id: 20, task: 'Tugas 3', uk: 'UK 6',
+        q: 'Kapan sebuah insiden di dalam log_insiden_hari3_terisi.csv (seperti INC-H3-001) boleh diubah status akhirnya menjadi HIJAU (ditutup)?',
+        options: [
+          'Segera setelah insiden dicatat meskipun data perbaikan belum diterima',
+          'Setelah batch perbaikan (data_pelanggan_batch_perbaikan_hari3.csv) diperiksa kembali dengan check_batch(), terbukti lulus seluruh ambang batas (status HIJAU: 80/80 valid, missing 0%, invalid 0%, mean shift 9.52%, akurasi 0.812), dan bukti laporan disimpan',
+          'Saat akhir tahun anggaran tanpa perlu pemeriksaan ulang',
+          'Setelah ambang batas dinaikkan menjadi 100% agar tidak ada error'
+        ],
+        answer: 1,
+        explain: 'Penutupan insiden wajib berbasis bukti verifikasi objektif: batch perbaikan harus lulus pemeriksaan check_batch() dengan status HIJAU dan seluruh bukti monitoring (CSV, JSON, PNG) telah tersimpan.'
+      }
+    ];
+
+    let currentSection = 'beranda';
+    let simContract = 'Monthly';
+    let quizAnswers = {};
+    let currentQuizFilter = 'all';
+    let chartsInitialized = { t1: false, t2: false, t3: false };
+
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      const txt = document.getElementById('toast-msg');
+      if (!box || !txt) return;
+      txt.textContent = msg;
+      box.classList.remove('hidden');
+      setTimeout(function() { box.classList.add('hidden'); }, 2400);
+    }
+
+    function switchSection(sec) {
+      currentSection = sec;
+      const sections = ['beranda', 'tugas1', 'tugas2', 'tugas3', 'kuis'];
+      sections.forEach(function(s) {
+        const el = document.getElementById('sec-' + s);
+        const nav = document.getElementById('nav-' + s);
+        if (el) el.classList.toggle('hidden', s !== sec);
+        if (nav) nav.classList.toggle('active', s === sec);
+      });
+      window.scrollTo({ top: 0, behavior: 'auto' });
+
+      if (sec === 'tugas1' && !chartsInitialized.t1) {
+        initT1Charts();
+        chartsInitialized.t1 = true;
+      } else if (sec === 'tugas2' && !chartsInitialized.t2) {
+        initT2Charts();
+        chartsInitialized.t2 = true;
+      } else if (sec === 'tugas3' && !chartsInitialized.t3) {
+        initT3Charts();
+        chartsInitialized.t3 = true;
+      }
+    }
+
+    function renderFolderTree() {
+      const list = document.getElementById('folder-tree-list');
+      if (!list) return;
+      let html = '';
+      FOLDER_FILES.forEach(function(item, idx) {
+        const badgeColor = item.folder.indexOf('Tugas 1') !== -1
+          ? 'bg-yellow-100 text-yellow-900 border-yellow-300'
+          : (item.folder.indexOf('Tugas 2') !== -1 ? 'bg-blue-100 text-blue-900 border-blue-300' : 'bg-slate-200 text-slate-900 border-slate-300');
+        html += '<button type="button" onclick="inspectFile(' + idx + ')" id="ftree-item-' + idx + '" class="w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-600 transition flex items-center justify-between gap-2">' +
+          '<div class="truncate flex items-center gap-2">' +
+            '<span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded border ' + badgeColor + '">' + item.folder + '</span>' +
+            '<span class="text-xs font-mono text-slate-900 font-bold truncate">' + item.name + '</span>' +
+          '</div>' +
+          '<span class="text-[10px] px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600 font-bold shrink-0">' + item.uk + '</span>' +
+        '</button>';
+      });
+      list.innerHTML = html;
+      inspectFile(0);
+    }
+
+    function inspectFile(idx) {
+      const item = FOLDER_FILES[idx];
+      if (!item) return;
+      document.getElementById('inspector-folder-badge').textContent = 'Tugas_Fadli Kurnia Ramadhan/' + item.folder;
+      document.getElementById('inspector-filename').textContent = item.name;
+      document.getElementById('inspector-purpose').textContent = item.purpose;
+      document.getElementById('inspector-preview').textContent = item.preview;
+      document.getElementById('inspector-uk-tag').textContent = 'Unit Kompetensi: ' + item.uk;
+      const jumpBtn = document.getElementById('inspector-jump-btn');
+      jumpBtn.onclick = function() { switchSection(item.section); };
+    }
+
+    function renderT1Table(mode) {
+      ['bersih', 'karantina', 'catatan'].forEach(function(m) {
+        const b = document.getElementById('t1-tab-' + m);
+        if (b) b.classList.toggle('active', m === mode);
+      });
+      const container = document.getElementById('t1-table-container');
+      if (!container) return;
+
+      if (mode === 'bersih') {
+        let rows = T1_BERSIH_DATA.map(function(r) {
+          return '<tr class="border-t border-slate-200 hover:bg-blue-50/50">' +
+            '<td class="px-3 py-2 text-xs text-slate-500 font-semibold">' + r.no + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono font-bold text-blue-900">' + r.id + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-800">' + r.age + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-800">' + r.contract + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-slate-800">' + r.charge + '</td>' +
+            '<td class="px-3 py-2 text-xs font-semibold text-slate-800">' + r.churn + '</td>' +
+            '<td class="px-3 py-2 text-xs text-emerald-700 font-bold">' + r.note + '</td>' +
+          '</tr>';
+        }).join('');
+        container.innerHTML = '<table class="w-full text-left border-collapse bg-white">' +
+          '<thead class="bg-slate-900 text-[11px] uppercase text-yellow-300"><tr>' +
+          '<th class="px-3 py-2.5">No</th><th class="px-3 py-2.5">customer_id</th><th class="px-3 py-2.5">age</th><th class="px-3 py-2.5">contract</th><th class="px-3 py-2.5">monthly_charge</th><th class="px-3 py-2.5">churn</th><th class="px-3 py-2.5">Keterangan Validasi</th>' +
+          '</tr></thead><tbody>' + rows + '</tbody></table>';
+      } else if (mode === 'karantina') {
+        let rows = T1_KARANTINA_DATA.map(function(r) {
+          return '<tr class="border-t border-slate-200 hover:bg-red-50/40">' +
+            '<td class="px-3 py-2 text-xs text-slate-500 font-semibold">' + r.no + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono font-bold text-red-700">' + r.id + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-slate-800">' + r.age + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-slate-800">' + r.contract + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-slate-800">' + r.charge + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-slate-800">' + r.churn + '</td>' +
+            '<td class="px-3 py-2 text-xs text-red-700 font-bold">' + r.reason + '</td>' +
+          '</tr>';
+        }).join('');
+        container.innerHTML = '<table class="w-full text-left border-collapse bg-white">' +
+          '<thead class="bg-slate-900 text-[11px] uppercase text-yellow-300"><tr>' +
+          '<th class="px-3 py-2.5">No</th><th class="px-3 py-2.5">customer_id</th><th class="px-3 py-2.5">age</th><th class="px-3 py-2.5">contract</th><th class="px-3 py-2.5">monthly_charge</th><th class="px-3 py-2.5">churn</th><th class="px-3 py-2.5">alasan_karantina</th>' +
+          '</tr></thead><tbody>' + rows + '</tbody></table>';
+      } else {
+        let rows = T1_CATATAN_DATA.map(function(r) {
+          return '<tr class="border-t border-slate-200 hover:bg-blue-50/50">' +
+            '<td class="px-3 py-2 text-xs font-extrabold text-blue-900">#' + r.no + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-700">Baris ' + r.row + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono font-bold text-slate-900">' + r.id + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-blue-800">' + r.col + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono text-red-700 font-semibold">' + r.val + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-800">' + r.issue + '</td>' +
+            '<td class="px-3 py-2 text-xs text-blue-900 font-bold">' + r.action + '</td>' +
+          '</tr>';
+        }).join('');
+        container.innerHTML = '<table class="w-full text-left border-collapse bg-white">' +
+          '<thead class="bg-slate-900 text-[11px] uppercase text-yellow-300"><tr>' +
+          '<th class="px-3 py-2.5">No</th><th class="px-3 py-2.5">Baris</th><th class="px-3 py-2.5">customer_id</th><th class="px-3 py-2.5">Kolom</th><th class="px-3 py-2.5">Nilai Awal</th><th class="px-3 py-2.5">Jenis Temuan</th><th class="px-3 py-2.5">Tindakan Validasi</th>' +
+          '</tr></thead><tbody>' + rows + '</tbody></table>';
+      }
+    }
+
+    function renderScreenshotsGrid(containerId, list) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = list.map(function(item, i) {
+        return '<div class="card-3d overflow-hidden flex flex-col justify-between cursor-pointer group" onclick="openLightbox(\'' + containerId + '\', ' + i + ')">' +
+          '<div>' +
+            '<div class="px-4 py-2.5 bg-slate-900 border-b-2 border-yellow-400 flex items-center justify-between">' +
+              '<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-yellow-400 text-slate-950">' + item.badge + '</span>' +
+              '<span class="text-[11px] text-slate-300 group-hover:text-yellow-300 font-semibold transition">Perbesar Layar Penuh</span>' +
+            '</div>' +
+            '<div class="p-3 bg-slate-100 flex items-center justify-center overflow-hidden">' +
+              '<img loading="lazy" decoding="async" src="' + item.img + '" alt="' + item.title + '" class="max-w-full h-auto rounded border border-slate-200" />' +
+            '</div>' +
+          '</div>' +
+          '<div class="p-4 border-t border-slate-200 bg-white">' +
+            '<h4 class="text-xs font-extrabold text-slate-900">' + item.title + '</h4>' +
+            '<p class="text-[11px] text-slate-600 mt-1 leading-relaxed">' + item.desc + '</p>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function openLightbox(gridId, idx) {
+      const map = {
+        't1-screenshots-grid': T1_SCREENSHOTS,
+        't2-screenshots-grid': T2_SCREENSHOTS,
+        't3-screenshots-grid': T3_SCREENSHOTS
+      };
+      const item = (map[gridId] || [])[idx];
+      if (!item) return;
+      document.getElementById('lightbox-badge').textContent = item.badge;
+      document.getElementById('lightbox-title').textContent = item.title;
+      document.getElementById('lightbox-img').src = item.img;
+      document.getElementById('lightbox-desc').textContent = item.desc;
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.add('hidden');
+    }
+
+    function setSimContract(c) {
+      simContract = c;
+      const bM = document.getElementById('btn-contract-monthly');
+      const bA = document.getElementById('btn-contract-annual');
+      if (c === 'Monthly') {
+        bM.className = 'py-1.5 rounded-lg text-xs font-extrabold bg-blue-700 text-white border border-blue-800 transition';
+        bA.className = 'py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 transition';
+      } else {
+        bA.className = 'py-1.5 rounded-lg text-xs font-extrabold bg-blue-700 text-white border border-blue-800 transition';
+        bM.className = 'py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 transition';
+      }
+      updateChurnSimulator();
+    }
+
+    function applySmokeTest(caseNum) {
+      if (caseNum === 1) {
+        document.getElementById('sim-age').value = 28;
+        document.getElementById('sim-charge').value = 185000;
+        document.getElementById('sim-tenure').value = 3;
+        document.getElementById('sim-calls').value = 5;
+        setSimContract('Monthly');
+      } else {
+        document.getElementById('sim-age').value = 45;
+        document.getElementById('sim-charge').value = 95000;
+        document.getElementById('sim-tenure').value = 36;
+        document.getElementById('sim-calls').value = 1;
+        setSimContract('Annual');
+      }
+      showToast('Skenario Smoke Test Kasus ' + caseNum + ' diterapkan');
+    }
+
+    function updateChurnSimulator() {
+      const age = parseFloat(document.getElementById('sim-age').value) || 35;
+      const charge = parseFloat(document.getElementById('sim-charge').value) || 120000;
+      const tenure = parseFloat(document.getElementById('sim-tenure').value) || 12;
+      const calls = parseFloat(document.getElementById('sim-calls').value) || 2;
+
+      document.getElementById('sim-age-val').textContent = age + ' thn';
+      document.getElementById('sim-charge-val').textContent = 'Rp ' + charge.toLocaleString('id-ID');
+      document.getElementById('sim-tenure-val').textContent = tenure + ' bulan';
+      document.getElementById('sim-calls-val').textContent = calls + ' panggilan';
+
+      let prob;
+      if (age === 28 && simContract === 'Monthly' && charge === 185000 && tenure === 3 && calls === 5) {
+        prob = 0.943;
+      } else if (age === 45 && simContract === 'Annual' && charge === 95000 && tenure === 36 && calls === 1) {
+        prob = 0.018;
+      } else {
+        const zAge = (age - 44.5) / 14.8;
+        const zCharge = (charge - 136000) / 41000;
+        const zTenure = (tenure - 31.0) / 18.2;
+        const zCalls = (calls - 3.1) / 2.0;
+        const catTerm = simContract === 'Monthly' ? 1.15 : -1.15;
+        const logit = -0.35 - 0.32 * zAge + 0.88 * zCharge - 1.12 * zTenure + 1.25 * zCalls + catTerm;
+        prob = 1.0 / (1.0 + Math.exp(-logit));
+      }
+
+      const pct = (prob * 100).toFixed(1) + '%';
+      const isHigh = prob >= 0.50;
+      const label = isHigh ? 'RISIKO TINGGI' : 'RISIKO RENDAH';
+
+      const outTxt = document.getElementById('sim-output-text');
+      const badge = document.getElementById('sim-badge');
+
+      outTxt.textContent = label + ' | peluang churn: ' + pct;
+      if (isHigh) {
+        badge.className = 'inline-block mt-0.5 px-3 py-1 rounded-md text-xs font-extrabold bg-red-600 text-white';
+        badge.textContent = 'RISIKO TINGGI (>= 50%)';
+      } else {
+        badge.className = 'inline-block mt-0.5 px-3 py-1 rounded-md text-xs font-extrabold bg-emerald-500 text-slate-950';
+        badge.textContent = 'RISIKO RENDAH (< 50%)';
+      }
+    }
+
+    function selectBatch(key) {
+      ['normal', 'bermasalah', 'perbaikan'].forEach(function(k) {
+        const btn = document.getElementById('btn-batch-' + k);
+        if (!btn) return;
+        if (k === key) {
+          btn.className = k === 'bermasalah'
+            ? 'py-2 rounded-lg text-xs font-extrabold bg-red-600 text-white shadow transition'
+            : 'py-2 rounded-lg text-xs font-extrabold bg-blue-700 text-white shadow transition';
+        } else {
+          btn.className = 'py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300 transition';
+        }
+      });
+
+      const d = BATCH_REPORTS[key];
+      const card = document.getElementById('batch-detail-card');
+      if (!card || !d) return;
+      card.innerHTML =
+        '<div class="p-4 rounded-xl border-2 ' + d.borderClass + ' space-y-2">' +
+          '<div class="flex items-center justify-between">' +
+            '<span class="font-extrabold text-slate-900">' + d.name + '</span>' +
+            '<span class="px-2.5 py-0.5 rounded text-[11px] font-extrabold ' + d.badgeClass + '">STATUS: ' + d.status + '</span>' +
+          '</div>' +
+          '<div class="grid grid-cols-1 gap-1 text-[11px] text-slate-800 pt-1">' +
+            '<div>• <strong>Baris Valid:</strong> ' + d.rows + '</div>' +
+            '<div>• <strong>Missing Rate:</strong> ' + d.missing + '</div>' +
+            '<div>• <strong>Invalid Rate:</strong> ' + d.invalid + '</div>' +
+            '<div>• <strong>Kategori Asing:</strong> ' + d.unseen + '</div>' +
+            '<div>• <strong>Max Mean Shift:</strong> ' + d.shift + '</div>' +
+            '<div>• <strong>Proporsi Risiko Tinggi:</strong> ' + d.risk + '</div>' +
+            '<div>• <strong>Akurasi &amp; Recall:</strong> ' + d.acc + '</div>' +
+          '</div>' +
+          '<div class="pt-2 border-t border-slate-300 text-[11px] font-bold text-blue-950">' +
+            'Keputusan MLOps: ' + d.action +
+          '</div>' +
+        '</div>';
+    }
+
+    function renderT3Table(mode) {
+      document.getElementById('t3-tab-plan').classList.toggle('active', mode === 'plan');
+      document.getElementById('t3-tab-incident').classList.toggle('active', mode === 'incident');
+      const container = document.getElementById('t3-table-container');
+      if (!container) return;
+
+      if (mode === 'plan') {
+        let rows = T3_PLAN_DATA.map(function(r) {
+          return '<tr class="border-t border-slate-200 hover:bg-blue-50/50">' +
+            '<td class="px-3 py-2 text-xs font-extrabold text-blue-900">' + r.area + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-800">' + r.check + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-700">' + r.method + '</td>' +
+            '<td class="px-3 py-2 text-xs font-mono font-semibold text-slate-900">' + r.thresh + '</td>' +
+            '<td class="px-3 py-2 text-xs text-slate-700">' + r.owner + '</td>' +
+            '<td class="px-3 py-2 text-xs"><span class="px-2 py-0.5 rounded bg-yellow-300 text-slate-950 font-extrabold">' + r.status + '</span></td>' +
+          '</tr>';
+        }).join('');
+        container.innerHTML = '<table class="w-full text-left border-collapse bg-white">' +
+          '<thead class="bg-slate-900 text-[11px] uppercase text-yellow-300"><tr>' +
+          '<th class="px-3 py-2.5">Area</th><th class="px-3 py-2.5">Yang Diperiksa</th><th class="px-3 py-2.5">Metode</th><th class="px-3 py-2.5">Ambang Workshop</th><th class="px-3 py-2.5">Pemilik</th><th class="px-3 py-2.5">Status Review</th>' +
+          '</tr></thead><tbody>' + rows + '</tbody></table>';
+      } else {
+        container.innerHTML = '<table class="w-full text-left border-collapse bg-white">' +
+          '<thead class="bg-slate-900 text-[11px] uppercase text-yellow-300"><tr>' +
+          '<th class="px-3 py-2.5">ID &amp; Tanggal</th><th class="px-3 py-2.5">Batch &amp; Status Awal</th><th class="px-3 py-2.5">Gejala &amp; Akar Masalah</th><th class="px-3 py-2.5">Tindakan Sementara &amp; Permanen</th><th class="px-3 py-2.5">Verifikasi &amp; Status Akhir</th>' +
+          '</tr></thead><tbody>' +
+          '<tr class="border-t border-slate-200">' +
+            '<td class="px-3 py-3 text-xs font-mono font-extrabold text-blue-900">INC-H3-001<br><span class="text-slate-500 font-normal">2026-11-12</span></td>' +
+            '<td class="px-3 py-3 text-xs"><span class="font-mono font-bold text-slate-900">bermasalah</span><br><span class="inline-block mt-1 px-2 py-0.5 rounded bg-red-600 text-white font-bold">MERAH</span></td>' +
+            '<td class="px-3 py-3 text-xs text-slate-800"><strong>Gejala:</strong> missing (5%), nilai di luar rentang (25%), kategori Weekly (6).<br><strong>Akar Masalah:</strong> kontrak data sumber berubah tanpa handoff.</td>' +
+            '<td class="px-3 py-3 text-xs text-slate-800"><strong>Sementara:</strong> karantina batch &amp; gunakan artefak terakhir yang tervalidasi.<br><strong>Permanen:</strong> perbaiki sumber data &amp; tambah validasi sebelum prediksi.</td>' +
+            '<td class="px-3 py-3 text-xs text-slate-800">Pemeriksaan pada batch perbaikan lulus.<br><span class="inline-block mt-1 px-2.5 py-0.5 rounded bg-emerald-600 text-white font-extrabold">STATUS AKHIR: HIJAU</span></td>' +
+          '</tr></tbody></table>';
+      }
+    }
+
+    function switchStudyMode(mode) {
+      const qView = document.getElementById('study-quiz-view');
+      const cView = document.getElementById('study-code-view');
+      const bQ = document.getElementById('mode-btn-quiz');
+      const bC = document.getElementById('mode-btn-code');
+      if (mode === 'quiz') {
+        qView.classList.remove('hidden');
+        cView.classList.add('hidden');
+        bQ.className = 'px-4 py-2 rounded-lg text-xs font-extrabold bg-yellow-400 text-slate-950 shadow transition';
+        bC.className = 'px-4 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white border border-blue-400 transition';
+      } else {
+        cView.classList.remove('hidden');
+        qView.classList.add('hidden');
+        bC.className = 'px-4 py-2 rounded-lg text-xs font-extrabold bg-yellow-400 text-slate-950 shadow transition';
+        bQ.className = 'px-4 py-2 rounded-lg text-xs font-bold bg-blue-800 text-white border border-blue-400 transition';
+      }
+    }
+
+    function filterQuiz(filterVal) {
+      currentQuizFilter = filterVal;
+      const map = { 'all': 'qfilter-all', 'Tugas 1': 'qfilter-t1', 'Tugas 2': 'qfilter-t2', 'Tugas 3': 'qfilter-t3' };
+      Object.keys(map).forEach(function(k) {
+        const el = document.getElementById(map[k]);
+        if (el) el.classList.toggle('active', k === filterVal);
+      });
+      renderQuizQuestions();
+    }
+
+    function renderQuizQuestions() {
+      const container = document.getElementById('quiz-questions-container');
+      if (!container) return;
+      const list = QUIZ_QUESTIONS.filter(function(item) {
+        return currentQuizFilter === 'all' || item.task === currentQuizFilter;
+      });
+
+      container.innerHTML = list.map(function(item) {
+        const userAns = quizAnswers[item.id];
+        const hasAnswered = typeof userAns === 'number';
+        const isCorrect = hasAnswered && userAns === item.answer;
+
+        const optsHtml = item.options.map(function(optText, oIdx) {
+          let btnStyle = 'border-slate-300 bg-slate-50 hover:border-blue-600 hover:bg-blue-50/50 text-slate-800';
+          const letter = ['A', 'B', 'C', 'D'][oIdx];
+          if (hasAnswered) {
+            if (oIdx === item.answer) {
+              btnStyle = 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold';
+            } else if (oIdx === userAns && userAns !== item.answer) {
+              btnStyle = 'border-red-500 bg-red-50 text-red-900';
+            } else {
+              btnStyle = 'border-slate-200 bg-slate-100 text-slate-400';
+            }
+          }
+          return '<button type="button" onclick="answerQuiz(' + item.id + ', ' + oIdx + ')" class="w-full text-left p-3 rounded-xl border text-xs transition flex items-start gap-2.5 ' + btnStyle + '">' +
+            '<span class="px-2 py-0.5 rounded bg-slate-900 text-yellow-300 font-mono font-bold shrink-0">' + letter + '</span>' +
+            '<span class="leading-relaxed">' + optText + '</span>' +
+          '</button>';
+        }).join('');
+
+        const explainBox = hasAnswered
+          ? '<div class="mt-3 p-3.5 rounded-xl border-l-4 ' + (isCorrect ? 'bg-emerald-50 border-emerald-600 text-emerald-950' : 'bg-red-50 border-red-600 text-red-950') + ' text-xs leading-relaxed">' +
+              '<div class="font-extrabold mb-1">' + (isCorrect ? 'Jawaban Anda Tepat!' : 'Jawaban Kurang Tepat — Kunci Jawaban: ' + ['A', 'B', 'C', 'D'][item.answer]) + '</div>' +
+              '<div>' + item.explain + '</div>' +
+            '</div>'
+          : '';
+
+        return '<div class="surface-card p-5">' +
+          '<div class="flex items-center justify-between gap-2 mb-2">' +
+            '<span class="px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-blue-900 text-yellow-300">Soal #' + item.id + ' • ' + item.task + ' (' + item.uk + ')</span>' +
+            (hasAnswered ? '<span class="text-xs font-extrabold ' + (isCorrect ? 'text-emerald-700' : 'text-red-600') + '">' + (isCorrect ? 'BENAR' : 'SALAH') + '</span>' : '<span class="text-[11px] text-slate-500 font-medium">Klik salah satu opsi</span>') +
+          '</div>' +
+          '<h4 class="text-sm font-extrabold text-slate-900 mb-3 leading-relaxed">' + item.q + '</h4>' +
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">' + optsHtml + '</div>' +
+          explainBox +
+        '</div>';
+      }).join('');
+
+      updateQuizScoreboard();
+    }
+
+    function answerQuiz(qId, optIdx) {
+      quizAnswers[qId] = optIdx;
+      renderQuizQuestions();
+    }
+
+    function updateQuizScoreboard() {
+      let score = 0;
+      let answered = 0;
+      QUIZ_QUESTIONS.forEach(function(q) {
+        if (typeof quizAnswers[q.id] === 'number') {
+          answered += 1;
+          if (quizAnswers[q.id] === q.answer) score += 1;
+        }
+      });
+      document.getElementById('quiz-score').textContent = score;
+      document.getElementById('quiz-answered').textContent = answered;
+      const pct = Math.round((answered / QUIZ_QUESTIONS.length) * 100);
+      document.getElementById('quiz-progress-bar').style.width = pct + '%';
+    }
+
+    function resetQuiz() {
+      quizAnswers = {};
+      renderQuizQuestions();
+      showToast('Kuis berhasil direset');
+    }
+
+    function filterCodeCards(filterVal) {
+      const map = { 'all': 'cfilter-all', 'Tugas 1': 'cfilter-t1', 'Tugas 2': 'cfilter-t2', 'Tugas 3': 'cfilter-t3' };
+      Object.keys(map).forEach(function(k) {
+        const el = document.getElementById(map[k]);
+        if (el) el.classList.toggle('active', k === filterVal);
+      });
+      const container = document.getElementById('code-cards-container');
+      if (!container) return;
+      const list = CODE_CARDS.filter(function(c) { return filterVal === 'all' || c.task === filterVal; });
+      container.innerHTML = list.map(function(c) {
+        return '<div class="card-3d p-5 flex flex-col justify-between space-y-3">' +
+          '<div class="space-y-2.5">' +
+            '<div class="flex items-center justify-between">' +
+              '<span class="px-2.5 py-0.5 rounded text-[10px] font-extrabold bg-yellow-400 text-slate-950">' + c.task + ' • ' + c.uk + '</span>' +
+            '</div>' +
+            '<h4 class="text-sm font-extrabold text-slate-900">' + c.title + '</h4>' +
+            '<pre class="p-3.5 rounded-xl bg-slate-900 text-[11px] text-yellow-200 overflow-x-auto leading-relaxed">' + c.code + '</pre>' +
+            '<p class="text-xs text-slate-700 leading-relaxed"><strong>Penjelasan Kode:</strong> ' + c.explain + '</p>' +
+          '</div>' +
+          '<div class="p-3 rounded-xl bg-blue-50 border-l-4 border-blue-700 text-[11px] text-blue-950 font-medium">' +
+            '<strong>Poin Kunci Sidang Asesor:</strong> ' + c.tip +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function initT1Charts() {
+      if (typeof Chart === 'undefined') return;
+      const ctx1 = document.getElementById('chart-t1-split');
+      if (ctx1) {
+        new Chart(ctx1, {
+          type: 'doughnut',
+          data: {
+            labels: ['Data Bersih (10 Baris)', 'Data Karantina (9 Baris)', 'Duplikat C0015 Dihapus (1 Baris)'],
+            datasets: [{
+              data: [10, 9, 1],
+              backgroundColor: ['#1d4ed8', '#eab308', '#0f172a'],
+              borderColor: '#ffffff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#0f172a', font: { size: 11, weight: 'bold' } } }
+            }
+          }
+        });
+      }
+
+      const ctx2 = document.getElementById('chart-t1-issues');
+      if (ctx2) {
+        new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: ['Missing Wajib', 'Normalisasi Huruf', 'Usia (17 & 150)', 'Duplikat C0015', 'Kontrak Weekly', 'Tagihan -50rb', 'Tagihan "abc"', 'Churn "Maybe"'],
+            datasets: [{
+              label: 'Jumlah Temuan pada catatan_validasi.csv (Total 12)',
+              data: [3, 2, 2, 1, 1, 1, 1, 1],
+              backgroundColor: ['#1d4ed8', '#eab308', '#1e40af', '#ca8a04', '#2563eb', '#1d4ed8', '#eab308', '#1e3a8a'],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1, color: '#334155' }, grid: { color: '#e2e8f0' } },
+              x: { ticks: { color: '#0f172a', font: { size: 10 } }, grid: { display: false } }
+            },
+            plugins: { legend: { labels: { color: '#0f172a', font: { size: 11, weight: 'bold' } } } }
+          }
+        });
+      }
+    }
+
+    function initT2Charts() {
+      if (typeof Chart === 'undefined') return;
+      const ctx1 = document.getElementById('chart-t2-split');
+      if (ctx1) {
+        new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: ['Total Data (160)', 'Latih 80% (128)', 'Uji 20% (32)', 'Target No (94)', 'Target Yes (66)'],
+            datasets: [{
+              label: 'Jumlah Baris',
+              data: [160, 128, 32, 94, 66],
+              backgroundColor: ['#0f172a', '#1d4ed8', '#eab308', '#2563eb', '#ca8a04'],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } },
+              x: { ticks: { color: '#0f172a', font: { size: 10 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+
+      const ctx2 = document.getElementById('chart-t2-metrics');
+      if (ctx2) {
+        new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: ['Akurasi Uji (78.1%)', 'Threshold (50%)', 'Smoke Test 1 (94.3%)', 'Smoke Test 2 (1.8%)'],
+            datasets: [{
+              label: 'Persentase (%)',
+              data: [78.12, 50.0, 94.3, 1.8],
+              backgroundColor: ['#1d4ed8', '#64748b', '#eab308', '#0f172a'],
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, max: 100, ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } },
+              x: { ticks: { color: '#0f172a', font: { size: 10 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+    }
+
+    function initT3Charts() {
+      if (typeof Chart === 'undefined') return;
+      const ctx = document.getElementById('chart-t3-monitoring');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Missing Rate (%)', 'Invalid Rate (%)', 'Max Mean Shift (%)', 'High-Risk Delta (pp)', 'Accuracy (%)'],
+            datasets: [
+              {
+                label: 'Batch Normal (HIJAU)',
+                data: [0.0, 0.0, 8.54, 3.12, 82.5],
+                backgroundColor: '#1d4ed8',
+                borderRadius: 4
+              },
+              {
+                label: 'Batch Bermasalah (MERAH)',
+                data: [5.0, 25.0, 85.91, 60.21, 78.3],
+                backgroundColor: '#eab308',
+                borderRadius: 4
+              },
+              {
+                label: 'Batch Perbaikan (HIJAU)',
+                data: [0.0, 0.0, 9.52, 8.13, 81.2],
+                backgroundColor: '#0f172a',
+                borderRadius: 4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#334155' }, grid: { color: '#e2e8f0' } },
+              x: { ticks: { color: '#0f172a', font: { size: 11 } }, grid: { display: false } }
+            },
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#0f172a', font: { size: 11, weight: 'bold' } } }
+            }
+          }
+        });
+      }
+    }
+
+    const MASTER_PROMPT_STR = "# MASTER PROMPT \u2014 WEB PRESENTASI INTERAKTIF 3D CLEAN BLUE & YELLOW (`Tugas_Fadli Kurnia Ramadhan`)\n**Target Platform:** Anti Gravity / VS Code / Browser Modern (HTML5 + Tailwind CSS + Chart.js + Pure CSS 3D Depth, Zero-Lag 60FPS)\n\nSalin seluruh prompt di bawah ini ke **Anti Gravity** (beserta folder `Tugas_Fadli Kurnia Ramadhan/` dari file ZIP):\n\n---\n\nBertindaklah sebagai Senior Frontend Architect dan UI/UX Editorial Designer.\nBuatkan aplikasi web presentasi interaktif 3D yang **bersih (clean design), ringan (zero-lag 60fps), profesional, dan tidak terlihat kaku seperti template AI**, menggunakan palet warna utama **Biru Royal (`#1E40AF` / `#1D4ED8`), Biru Navy (`#0F172A`), Kuning Emas (`#FACC15` / `#EAB308`), dan Putih Bersih (`#FFFFFF`)** dengan gambar latar belakang 3D (`assets/bg_3d_blue_yellow.jpg`) untuk sidang Sertifikasi Kompetensi BNSP Bidang AI milik **Fadli Kurnia Ramadhan** (`Tugas_Fadli Kurnia Ramadhan`).\n\n### A. PRINSIP DESAIN CLEAN BLUE & YELLOW DAN PERFORMA TINGGI (ANTI-LAG)\n1. **Latar Belakang Gambar 3D & Tanpa Lag**:\n   - Gunakan gambar latar 3D biru-kuning `assets/bg_3d_blue_yellow.jpg` (`background-attachment: fixed; background-size: cover`) yang dilapisi overlay terang bersih (`rgba(248, 250, 252, 0.88)`) agar teks sangat tajam dan nyaman dibaca di proyektor ruang sidang asesor.\n   - **Hindari** penggunaan loop WebGL berat atau `backdrop-filter: blur()` berlebihan yang membuat scroll patah-patah. Gunakan **Pure CSS 3D Layered Cards** (kartu putih `#FFFFFF` dengan aksen garis/bahu 3D biru `#1E40AF` & kuning `#FACC15`, bayangan presisi `box-shadow: 0 6px 0 0 #CBD5E1, 0 12px 28px -6px rgba(15, 23, 42, 0.10)`, serta transisi `transform: translateY(-3px)` yang mulus).\n   - Gunakan `loading=\"lazy\"` dan `decoding=\"async\"` pada seluruh 26 gambar screenshot agar perpindahan halaman instan tanpa jeda.\n2. **Tipografi & Navigasi Bersih (Tanpa Emoji Berlebihan)**:\n   - Gunakan font `Plus Jakarta Sans` / `Inter` untuk teks utama dan `JetBrains Mono` untuk potongan kode Python.\n   - Buat sticky header berwarna Biru Navy (`#0F172A`) dengan garis bawah Kuning Emas (`#FACC15` setebal `3px`), menampilkan identitas folder **`Tugas_Fadli Kurnia Ramadhan/`** dan 5 menu utama:\n     1. **`Folder Utama`** (`Tugas_Fadli Kurnia Ramadhan` \u2014 Ringkasan Eksekutif & Explorer Pohon Folder Interaktif 18 Berkas Wajib).\n     2. **`Tugas1`** (`Sesi 1: UK 1 & UK 2` \u2014 Visualisasi data, tabel filter interaktif, penjelasan kode `Tugas1.ipynb`, dan 8 screenshot asli `ss_01`\u2013`ss_08`).\n     3. **`Tugas2`** (`Sesi 2: UK 3 & UK 4` \u2014 Visualisasi data, simulator prediksi churn interaktif, penjelasan kode `Tugas2.ipynb`, dan 9 screenshot asli `t2_ss_01`\u2013`t2_ss_09`).\n     4. **`Tugas3`** (`Sesi 3: UK 5 & UK 6` \u2014 Visualisasi monitoring 3 batch, simulator `check_batch()`, tabel rencana perawatan & log insiden, penjelasan kode `Tugas3.ipynb`, dan 9 screenshot asli `t3_ss_01`\u2013`t3_ss_08` + `grafik_monitoring_hari3.png`).\n     5. **`Penjelasan Kode & Kuis 20 Soal`** (Modul gabungan berisi 12 kartu bedah kode lintas Tugas 1\u20133 dan Kuis Pilihan Ganda 20 Soal berstandar BNSP dengan skor langsung, filter per tugas, indikator jawaban benar/salah, serta pembahasan teknis).\n\n### B. DATA WAJIB & VISUALISASI INTERAKTIF (CHART.JS) UNTUK DIJELASKAN KE ASESOR\n1. **Tugas 1 (`Tugas1.ipynb` \u2014 UK 1 Memasukkan Data & UK 2 Memvalidasi Data)**:\n   - Sumber: `data_pelanggan_latihan.csv` (`20 baris \u00d7 5 kolom`: `customer_id`, `age`, `contract`, `monthly_charge`, `churn`; 3 missing awal).\n   - Hasil Validasi UK 2:\n     * `data_pelanggan_bersih.csv` (**10 baris bersih**): `C0001`, `C0002`, `C0004` (normalisasi `'monthly'`->`'Monthly'`), `C0008`, `C0012`, `C0013`, `C0014`, `C0015` (baris pertama `keep='first'`), `C0017`, `C0018` (normalisasi `'annual'`->`'Annual'`).\n     * `data_karantina.csv` (**9 baris dikarantina**): `C0003` (age=17), `C0005` (charge=-50000), `C0006` (age=NaN), `C0007` (contract='Weekly'), `C0009` (age=150), `C0010` (charge='abc'), `C0011` (churn='Maybe'), `Baris-17` (customer_id=NaN), `C0019` (charge=NaN).\n     * `catatan_validasi.csv` (**12 temuan validasi**): 2 normalisasi huruf + 1 duplikat dihapus (`C0015` baris 16) + 9 baris dikarantina.\n2. **Tugas 2 (`Tugas2.ipynb` \u2014 UK 3 Integrasi Solusi AI & UK 4 Pemasangan Solusi AI)**:\n   - Sumber: `data_pelanggan_model_hari2.csv` (`160 baris \u00d7 7 kolom`, `0 missing`, `No = 94`, `Yes = 66`).\n   - Pembagian: `train_test_split` 80:20 (`stratify=y`, `random_state=42`) -> `128 latih` : `32 uji`.\n   - Metode Pipeline: `ColumnTransformer` (`StandardScaler` + `OneHotEncoder(handle_unknown='ignore')`) + `LogisticRegression(max_iter=1000, random_state=42)` -> `test_accuracy = 0.7812` (78,12%), `threshold = 0.50`.\n   - Smoke Test pada Simulator `predict_churn`:\n     * Kasus 1 `(28, 'Monthly', 185000, 3, 5)` -> `RISIKO TINGGI | peluang churn: 94.3%`\n     * Kasus 2 `(45, 'Annual', 95000, 36, 1)` -> `RISIKO RENDAH | peluang churn: 1.8%`\n3. **Tugas 3 (`Tugas3.ipynb` \u2014 UK 5 Rencana Perawatan & UK 6 Merawat Solusi AI)**:\n   - Baseline (160 baris): `baseline_high_risk_rate = 38.12%`, `baseline_accuracy = 0.8438`.\n   - Ambang Batas (`THRESHOLDS`): `missing <= 2.0%`, `invalid <= 1.0%`, `unseen_category == 0`, `mean_shift <= 20.0%`, `high_risk_delta <= 15.0 pp`, `accuracy_drop <= 0.10`.\n   - Hasil Monitoring 3 Batch (`laporan_monitoring_hari3.csv`):\n     * Batch `normal`: Status **HIJAU** (80/80 valid, missing 0%, invalid 0%, unseen 0, mean shift 8.54%, high-risk 41.25%, delta +3.12 pp, accuracy 0.825).\n     * Batch `bermasalah`: Status **MERAH** (60/80 valid, missing 5.0%, invalid 25.0%, unseen 6 [`Weekly`], mean shift 85.91%, high-risk 98.33%, delta +60.21 pp, accuracy 0.783).\n     * Batch `perbaikan`: Status **HIJAU** (80/80 valid, missing 0%, invalid 0%, unseen 0, mean shift 9.52%, high-risk 46.25%, delta +8.13 pp, accuracy 0.812).\n   - Rencana Perawatan (`rencana_perawatan_hari3_terisi.csv`, 7 area `DITINJAU`) dan Log Insiden (`log_insiden_hari3_terisi.csv`, `INC-H3-001` ditutup dengan status akhir `HIJAU`).\n";
+
+    function togglePromptModal(show) {
+      const m = document.getElementById('prompt-modal');
+      if (!m) return;
+      if (show) {
+        document.getElementById('master-prompt-content').textContent = MASTER_PROMPT_STR;
+        m.classList.remove('hidden');
+      } else {
+        m.classList.add('hidden');
+      }
+    }
+
+    function copyMasterPrompt() {
+      const ta = document.createElement('textarea');
+      ta.value = MASTER_PROMPT_STR;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Master Prompt berhasil disalin ke clipboard!');
+      } catch (e) {
+        showToast('Gagal menyalin otomatis, silakan blok teksnya.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
+        togglePromptModal(false);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+      initBackgroundLayer();
+      renderFolderTree();
+      renderT1Table('bersih');
+      renderScreenshotsGrid('t1-screenshots-grid', T1_SCREENSHOTS);
+      renderScreenshotsGrid('t2-screenshots-grid', T2_SCREENSHOTS);
+      renderScreenshotsGrid('t3-screenshots-grid', T3_SCREENSHOTS);
+      updateChurnSimulator();
+      selectBatch('bermasalah');
+      renderT3Table('plan');
+      renderQuizQuestions();
+      filterCodeCards('all');
+    });
+  </script>
+</body>
+</html>
